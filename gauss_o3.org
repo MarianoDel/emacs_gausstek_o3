@@ -1,0 +1,74 @@
+* Generador O3 Gausstek
+** Migrar programa desde emacs_F051_lcd
+   - en la placa planolux RGBW ver 1.0 desarrolle el soft
+   - lo tengo que migrar de placa y micro al nuevo prototipo
+   - la mayoria de las funciones las deje en el main
+
+** Migrar Hard
+*** TODO del modulo hard
+    - los pines de hard.h
+    - las funciones de hard.c o a hard.c
+      
+*** TODO del modulo gpio
+    - la utilizacion de pines pero aplicadas al nuevo hardware
+
+*** TODO desde el main
+    - aca deje casi todas las funciones principales para migrar facil
+    - cosas del hard y el soft
+
+** Migrar Soft
+*** TODO desde el main a los distintos modulos
+    - todas las rutinas que utilice las deje en el main
+    - pasarlas a los modulos que corresponda
+
+** Falta Relay
+*** TODO todas las rutinas del relay con TIM6 faltan migrar y probar
+
+** Falta zcd
+*** TODO probablemente por interrupcion
+    - el zero crossing deberia estar por interrupcion
+    - es porque el uso del LCD es muy intensivo y demora bastante 
+      la ejecucion del programa
+
+** Falta Encoder
+*** TODO Las rutinas del encoder faltan
+    - hay que traducir el movimiento al enum de switches
+    - hay que mirar el resultado solo dentro del menu principal
+    - fuera del menu solo usa el switch del SET
+
+** Armar rutinas en test_functions
+*** TODO armar las rutinas de prueba
+    - rutinas de pruebas de los nuevos pines IO
+    - mover los perifericos
+
+** Armar grabado de memoria para los seteos iniciales
+*** TODO en el modulo flash_program
+    - de esto no hice nada, solo en el main deje una estructura para los seteos
+    - no se si vale la pena una estructura previa para seteos iniciales
+      o simplemente arrancar por default, ya que los valores iniciales son muy pocos
+
+** DONE Funciones que quiera testear especialmente (solo soft) ya esta puesto
+   CLOSED: [2020-06-27 Sat 08:43]
+*** La parte del soft que no dependa del hard lo puedo poner en tests.c
+    - este tests.c no es un modulo, sino un programa independiente para 
+      testeo de funciones
+    - lo pruebo con make tests
+
+** DONE Makefile y lcd lcd_utils ya estan migrados
+   CLOSED: [2020-06-27 Sat 08:40]
+   - todo esto ya lo pase, al Makefile le tengo que hacer el update de modulos
+     que realmente use en la nueva placa
+
+
+
+* Info sobre cosas especiales en el LCD
+  - esta info la busque en este link
+    https://www.8051projects.net/lcd-interfacing/initialization.php
+
+* Info sobre el funcionamiento del encoder
+  - todavia no puse las rutinas, pero fui con este link
+    https://dronebotworkshop.com/rotary-encoders-arduino/
+
+* Modificaciones al Hard 30-06-2020
+  - agregar un led!!!
+  - diodo de inversion de polaridad en 12V
