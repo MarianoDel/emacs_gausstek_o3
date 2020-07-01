@@ -28,6 +28,8 @@
 
 // Externals -------------------------------------------------------------------
 extern char s_blank [];
+parameters_typedef * pmem = (parameters_typedef *) (unsigned int *) FLASH_PAGE_FOR_BKP;
+mem_bkp_t configurations_in_mem;
 
 
 // Globals ---------------------------------------------------------------------
@@ -119,13 +121,18 @@ int main(void)
     unsigned char last_secs = 0;
     unsigned char barrita = 0;
 
-    //configuracion desde la memoria
-    // configuration_in_mem.treatment_time_min = 10;
-    // configuration_in_mem.ticker_time = 60000;
-    mem_bkp_t configurations_in_mem;
-    configurations_in_mem.ticker_onoff = 1;
-    unsigned char treatment_time_min = 10;
-    unsigned short ticker = 60000;
+    // configuracion desde la memoria
+    memcpy(&configurations_in_mem, pmem, sizeof(mem_bkp_t));
+
+    // check empty mem
+    if (configurations_in_mem.treatment_time_min == 0xff)
+    {
+        //mem empty go for defaults
+        configurations_in_mem.treatment_time_min = 10;
+        configurations_in_mem.alarms_onoff = 1;
+        configurations_in_mem.ticker_onoff = 1;        
+        configurations_in_mem.ticker_time = 60000;
+    }
 
     LCD_UtilsInit();
     LCD_BigNumbersInit();
@@ -158,7 +165,8 @@ int main(void)
             break;
             
         case MAIN_STAND_BY_0:
-            sprintf (s_lcd, "Tiempo de Generacion: %d", treatment_time_min);
+            sprintf (s_lcd, "Tiempo de Generacion: %d",
+                     configurations_in_mem.treatment_time_min);
             strcat (s_lcd, " minutos - Presione O3 para Generar Ozono o SET para ingresar al Menu");
             main_state++;
             break;
@@ -168,7 +176,7 @@ int main(void)
 
             if (CheckO3() > SW_NO)
             {
-                treatment_running_mins = treatment_time_min;
+                treatment_running_mins = configurations_in_mem.treatment_time_min;
                 treatment_running_secs = 0;
                 
                 main_state = MAIN_START_TREATMENT;
@@ -185,8 +193,10 @@ int main(void)
                 LCD_ClearScreen();
                 Lcd_SetDDRAM(14);
                 Lcd_TransmitStr("O3");
-                BuzzerCommands(BUZZER_LONG_CMD, 1);
-                timer_ticker = ticker;
+                if (configurations_in_mem.alarms_onoff)
+                    BuzzerCommands(BUZZER_LONG_CMD, 1);
+                
+                timer_ticker = configurations_in_mem.ticker_time;
                 RelayOn();
 
                 treatment_running = 1;
@@ -196,12 +206,12 @@ int main(void)
             break;
 
         case MAIN_IN_TREATMENT:
-            if (ticker)
+            if (configurations_in_mem.ticker_onoff)
             {
                 if (!timer_ticker)
                 {
                     BuzzerCommands(BUZZER_SHORT_CMD, 1);
-                    timer_ticker = ticker;
+                    timer_ticker = configurations_in_mem.ticker_time;
                 }
             }
 
@@ -282,7 +292,9 @@ int main(void)
             if (CheckO3() == SW_NO)
             {
                 LCD_ClearScreen();
-                BuzzerCommands(BUZZER_SHORT_CMD, 3);
+                if (configurations_in_mem.alarms_onoff)
+                    BuzzerCommands(BUZZER_SHORT_CMD, 3);
+                
                 RelayOff();
                 LCD_Scroll2Reset();
                 main_state = MAIN_PAUSED;
@@ -326,7 +338,9 @@ int main(void)
         case MAIN_ENDING_TREATMENT:
             if (CheckSET() == SW_NO)
             {
-                BuzzerCommands(BUZZER_LONG_CMD, 3);
+                if (configurations_in_mem.alarms_onoff)
+                    BuzzerCommands(BUZZER_LONG_CMD, 3);
+                
                 main_state = MAIN_INIT;
             }
             break;
@@ -335,8 +349,33 @@ int main(void)
             resp = MENU_Main(&configurations_in_mem);
 
             if (resp == resp_finish)
+            {
+                __disable_irq();
+                resp = WriteConfigurations();
+                __enable_irq();
+
+                if (resp)
+                {
+                    do {
+                        resp = LCD_ShowBlink ("Memory Saved OK!",
+                                              s_blank,
+                                              0,
+                                              BLINK_NO);
+                    } while (resp != resp_finish);
+                }
+                else
+                {
+                    do {
+                        resp = LCD_ShowBlink ("Memory problems ",
+                                              "Not saved!      ",
+                                              0,
+                                              BLINK_NO);
+                    } while (resp != resp_finish);
+                    
+                }
+
                 main_state = MAIN_INIT;
-            
+            }
             break;
 
             

@@ -13,7 +13,7 @@
 
 
 /* Externals variables ---------------------------------------------------------*/
-extern parameters_typedef mem_conf;
+extern parameters_typedef configurations_in_mem;
 
 
 /* Private typedef -----------------------------------------------------------*/
@@ -52,7 +52,7 @@ unsigned char WriteConfigurations (void)
     ErasePage(FLASH_PAGE_FOR_BKP,0);
 
     //update en memoria
-    p_param = &mem_conf;
+    p_param = &configurations_in_mem;
 
     if (WriteFlash((unsigned int *) p_param, FLASH_PAGE_FOR_BKP, 1, sizeof(parameters_typedef)) == FAILED)
         return FAILED;
