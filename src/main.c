@@ -340,7 +340,8 @@ int main(void)
             {
                 if (configurations_in_mem.alarms_onoff)
                     BuzzerCommands(BUZZER_LONG_CMD, 3);
-                
+
+                RelayOff();
                 main_state = MAIN_INIT;
             }
             break;

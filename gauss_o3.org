@@ -5,44 +5,54 @@
    - la mayoria de las funciones las deje en el main
 
 ** Migrar Hard
-*** TODO del modulo hard
+*** DONE del modulo hard
+    CLOSED: [2020-07-01 Wed 16:50]
     - los pines de hard.h
     - las funciones de hard.c o a hard.c
       
-*** TODO del modulo gpio
+*** DONE del modulo gpio
+    CLOSED: [2020-07-01 Wed 16:50]
     - la utilizacion de pines pero aplicadas al nuevo hardware
 
-*** TODO desde el main
+*** DONE desde el main
+    CLOSED: [2020-07-01 Wed 16:50]
     - aca deje casi todas las funciones principales para migrar facil
     - cosas del hard y el soft
 
 ** Migrar Soft
-*** TODO desde el main a los distintos modulos
+*** DONE desde el main a los distintos modulos
+    CLOSED: [2020-07-01 Wed 16:50]
     - todas las rutinas que utilice las deje en el main
     - pasarlas a los modulos que corresponda
 
 ** Falta Relay
-*** TODO todas las rutinas del relay con TIM6 faltan migrar y probar
+*** DONE todas las rutinas del relay con TIM6 faltan migrar y probar
+    CLOSED: [2020-07-01 Wed 16:50]
+    - use el TIM16 por interrupcion finalmente
 
 ** Falta zcd
-*** TODO probablemente por interrupcion
+*** DONE probablemente por interrupcion
+    CLOSED: [2020-07-01 Wed 16:51]
     - el zero crossing deberia estar por interrupcion
     - es porque el uso del LCD es muy intensivo y demora bastante 
       la ejecucion del programa
 
 ** Falta Encoder
-*** TODO Las rutinas del encoder faltan
+*** DONE Las rutinas del encoder faltan
+    CLOSED: [2020-07-01 Wed 16:51]
     - hay que traducir el movimiento al enum de switches
     - hay que mirar el resultado solo dentro del menu principal
     - fuera del menu solo usa el switch del SET
 
 ** Armar rutinas en test_functions
-*** TODO armar las rutinas de prueba
+*** DONE armar las rutinas de prueba
+    CLOSED: [2020-07-01 Wed 16:51]
     - rutinas de pruebas de los nuevos pines IO
     - mover los perifericos
 
 ** Armar grabado de memoria para los seteos iniciales
-*** TODO en el modulo flash_program
+*** DONE en el modulo flash_program
+    CLOSED: [2020-07-01 Wed 16:51]
     - de esto no hice nada, solo en el main deje una estructura para los seteos
     - no se si vale la pena una estructura previa para seteos iniciales
       o simplemente arrancar por default, ya que los valores iniciales son muy pocos
