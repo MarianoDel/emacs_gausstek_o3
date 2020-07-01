@@ -188,10 +188,9 @@ unsigned char CheckCW (void);
 
 void RelayOn (void);
 void RelayOff (void);
-unsigned char RelayIsOn (void);
-unsigned char RelayIsOff (void);
 void UpdateRelay (void);
-
+void RelaySyncHandler (void);
+void RelayTimHandler (void);
 
 
 #endif /* _HARD_H_ */

@@ -148,8 +148,8 @@ void GPIO_Config (void)
     SYSCFG->EXTICR[1] = 0x00000000; //Select Port A
     EXTI->IMR |= 0x0040; 			//Corresponding mask bit for interrupts PA6
     EXTI->EMR |= 0x0000; 			//Corresponding mask bit for events
-    EXTI->RTSR |= 0x0040; 			//Pin Interrupt line on rising edge PA6
-    EXTI->FTSR |= 0x0000; 			//Pin Interrupt line on falling edge PA6
+    EXTI->RTSR |= 0x0000; 			//Pin Interrupt line on rising edge PA6
+    EXTI->FTSR |= 0x0040; 			//Pin Interrupt line on falling edge PA6
 
     NVIC_EnableIRQ(EXTI4_15_IRQn);
     NVIC_SetPriority(EXTI4_15_IRQn, 3);

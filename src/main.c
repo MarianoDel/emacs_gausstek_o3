@@ -110,6 +110,8 @@ int main(void)
 
     
     // Production Program ---------------------------
+    TIM16_Init();    //synchro with relay
+    
     main_state_t main_state = MAIN_INIT;
     char s_lcd [100] = { 0 };
     resp_t resp = resp_continue;
@@ -136,6 +138,7 @@ int main(void)
             LCD_ClearScreen();
             main_state = MAIN_WELCOME;
             LCD_Scroll1Reset();
+            TIM16Enable();
             break;
             
         case MAIN_WELCOME:
@@ -403,10 +406,9 @@ void TimingDelay_Decrement(void)
 void EXTI4_15_IRQHandler(void)
 {
     EXTI->PR |= 0x00000040;    //PA6
-    if (LCD_E)
-        LCD_E_OFF;
-    else
-        LCD_E_ON;
+
+    RelaySyncHandler();
+    
 }
 #endif
 

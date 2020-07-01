@@ -9,6 +9,7 @@
 //----------------------------------------------
 #include "hard.h"
 #include "stm32f0xx.h"
+#include "tim.h"
 
 
 // Module Private Types & Macros -----------------------------------------------
@@ -59,7 +60,7 @@ unsigned short buzzer_timer_reload_space = 0;
 
 
 // Module Private Functions ----------------------------------------------------
-
+void UpdateRelayTimeout (void);
 
 // Module Functions ------------------------------------------------------------
 //cambia configuracion de bips del LED
@@ -235,6 +236,8 @@ void HARD_Timeouts (void)
         buzzer_timeout--;
 
     UpdateEncoderFilters();
+
+    UpdateRelayTimeout();
     
 }
 
@@ -367,65 +370,34 @@ unsigned char CheckCW (void)
 }
 
 
-#define TT_DELAYED_OFF		3600		//para relay placa redonda
-#define TT_DELAYED_ON		4560		//para relay placa redonda
+#define TT_RELAY_DELAYED_OFF    2100		//para relay placa redonda
+#define TT_RELAY_DELAYED_ON    1400		//para relay placa redonda
 #define TT_RELAY			60		//timeout de espera antes de pegar o despegar el relay
 
-enum Relay_State {
+typedef enum {
+    RLY_DONE = 0,
+    RLY_TO_ON,
+    RLY_TO_OFF
 
-	ST_OFF = 0,
-	ST_WAIT_ON,
-	ST_DELAYED_ON,
-	ST_ON,
-	ST_WAIT_OFF,
-	ST_DELAYED_OFF
-
-};
+} relay_state_t;
 
 volatile unsigned short timer_relay = 0;
-enum Relay_State relay_state = ST_OFF;
-unsigned char last_edge;
+volatile relay_state_t relay_state = RLY_DONE;
+
 
 //Pide conectar el relay
 void RelayOn (void)
 {
-    if (!RelayIsOn())
-    {
-        relay_state = ST_WAIT_ON;
-        timer_relay = TT_RELAY;
-    }
+    relay_state = RLY_TO_ON;
+    timer_relay = TT_RELAY;
 }
+
 
 //Pide desconectar el relay
 void RelayOff (void)
 {
-    if (!RelayIsOff())
-    {
-        relay_state = ST_WAIT_OFF;
-        timer_relay = TT_RELAY;
-    }
-}
-
-//Revisa el estado del relay
-unsigned char RelayIsOn (void)
-{
-    if ((relay_state == ST_WAIT_ON) ||
-        (relay_state == ST_DELAYED_ON) ||
-        (relay_state == ST_ON))
-        return 1;
-    else
-        return 0;
-}
-
-//Revisa el estado del relay
-unsigned char RelayIsOff (void)
-{
-    if ((relay_state == ST_WAIT_OFF) ||
-        (relay_state == ST_DELAYED_OFF) ||
-        (relay_state == ST_OFF))
-        return 1;
-    else
-        return 0;
+    relay_state = RLY_TO_OFF;
+    timer_relay = TT_RELAY;
 }
 
 
@@ -435,86 +407,64 @@ void UpdateRelayTimeout (void)
         timer_relay--;
 }
 
+
 //chequeo continuo del estado del relay
 void UpdateRelay (void)
 {
     unsigned char edge = 0;
 
-    // if ((!last_edge) && (SYNC))		//flanco ascendente detector
-    // {									//senoidal arriba
-    //     last_edge = 1;
-    //     SYNCP_ON;
-    // }
+    if (relay_state == RLY_TO_ON)
+    {
+        //si me piden prender relay, y no hubo synchro previo
+        //prendo luego de agotar el timer
+        if (!timer_relay)
+        {
+            relay_state = RLY_DONE;
+            RELAY_ON;
+        }
+    }
 
-    // if ((last_edge) && (!SYNC))		//flanco descendente detector
-    // {									//senoidal abajo
-    //     edge = 1;
-    //     last_edge = 0;
-    //     SYNCP_OFF;
-    // }
+    if (relay_state == RLY_TO_OFF)
+    {
+        //si me piden apagar relay, y no hubo synchro previo
+        //prendo luego de agotar el timer
+        if (!timer_relay)
+        {
+            relay_state = RLY_DONE;
+            RELAY_OFF;
+        }
+    }    
+}
 
-    // switch (relay_state)
-    // {
-    // case ST_OFF:
 
-    //     break;
+void RelaySyncHandler (void)
+{
+    if (relay_state == RLY_TO_ON)
+    {
+        TIM16->CNT = 0;
+        TIM16->ARR = TT_RELAY_DELAYED_ON;
+        TIM16Enable();
+    }
 
-    // case ST_WAIT_ON:
-    //     if (edge)
-    //     {
-    //         edge = 0;
-    //         relay_state = ST_DELAYED_ON;
-    //         TIM16->CNT = 0;
-    //     }
+    if (relay_state == RLY_TO_OFF)
+    {
+        TIM16->CNT = 0;
+        TIM16->ARR = TT_RELAY_DELAYED_OFF;
+        TIM16Enable();
+    }    
+}
 
-    //     if (!timer_relay)		//agoto el timer y no encontro sincro, pega igual
-    //     {
-    //         RELAY_ON;
-    //         relay_state = ST_ON;
-    //     }
-    //     break;
 
-    // case ST_DELAYED_ON:
-    //     if (TIM16->CNT > TT_DELAYED_ON)
-    //     {
-    //         RELAY_ON;
-    //         relay_state = ST_ON;
-    //     }
-    //     break;
+void RelayTimHandler (void)
+{
+    if (relay_state == RLY_TO_ON)
+        RELAY_ON;
 
-    // case ST_ON:
+    if (relay_state == RLY_TO_OFF)
+        RELAY_OFF;
 
-    //     break;
-
-    // case ST_WAIT_OFF:
-    //     if (edge)
-    //     {
-    //         edge = 0;
-    //         relay_state = ST_DELAYED_OFF;
-    //         TIM16->CNT = 0;
-    //     }
-
-    //     if (!timer_relay)		//agoto el timer y no encontro sincro, despega igual
-    //     {
-    //         RELAY_OFF;
-    //         relay_state = ST_OFF;
-    //     }
-
-    //     break;
-
-    // case ST_DELAYED_OFF:
-    //     if (TIM16->CNT > TT_DELAYED_OFF)
-    //     {
-    //         RELAY_OFF;
-    //         relay_state = ST_OFF;
-    //     }
-    //     break;
-
-    // default:
-    //     RELAY_OFF;
-    //     relay_state = ST_OFF;
-    //     break;
-    // }
+    relay_state = RLY_DONE;
+    TIM16Disable();    
 }
 
 //--- end of file ---//
