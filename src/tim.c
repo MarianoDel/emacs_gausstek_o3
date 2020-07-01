@@ -216,7 +216,7 @@ void TIM16_Init (void)
 
     //Configuracion del timer.
     TIM16->CR1 = 0x00;		//clk int / 1; upcounting; uev
-    TIM16->ARR = 0xFFFF;
+    TIM16->ARR = 0;
     TIM16->CNT = 0;
     
     TIM16->PSC = 47;
