@@ -116,7 +116,7 @@ typedef enum
 #define BUZZER_SHORT_CMD        3
 
 // Buzzer Timeouts
-#define TT_BUZZER_BIP_SHORT		300
+#define TT_BUZZER_BIP_SHORT		100
 #define TT_BUZZER_BIP_SHORT_WAIT	500
 #define TT_BUZZER_BIP_HALF		600
 #define TT_BUZZER_BIP_HALF_WAIT    	800

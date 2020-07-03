@@ -131,7 +131,8 @@ int main(void)
         configurations_in_mem.treatment_time_min = 10;
         configurations_in_mem.alarms_onoff = 1;
         configurations_in_mem.ticker_onoff = 1;        
-        configurations_in_mem.ticker_time = 60000;
+        // configurations_in_mem.ticker_time = 60000;
+        configurations_in_mem.ticker_time = 2000;
     }
 
     LCD_UtilsInit();
