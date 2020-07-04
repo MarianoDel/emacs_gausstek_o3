@@ -664,7 +664,8 @@ resp_t LCD_ShowSelectv2 (const char * p_text, sw_actions_t sw_action)
         Lcd_TransmitStr((const char *) "Selected");
 #endif
 #ifdef LINE_LENGTH_16
-        Lcd_TransmitStr((const char *) "Selected...     ");
+        // Lcd_TransmitStr((const char *) "Selected...     ");
+        Lcd_TransmitStr((const char *) "Seleccionado... ");
 #endif        
         show_select_state++;
         break;
@@ -774,7 +775,8 @@ resp_t LCD_EncoderOptionsOnOff (char * primer_renglon,
         if (actions == selection_enter)
         {
             LCD_2DO_RENGLON;
-            Lcd_TransmitStr((const char *) "Selected...     ");
+            // Lcd_TransmitStr((const char *) "Selected...     ");
+            Lcd_TransmitStr((const char *) "Seleccionado... ");
             options_state = OPTIONS_ONOFF_SELECT_OPTION;
         }
 
@@ -898,7 +900,8 @@ resp_t LCD_EncoderChange (char * primer_renglon,
         if (actions == selection_enter)
         {
             LCD_2DO_RENGLON;
-            Lcd_TransmitStr((const char *) "Selected...     ");
+            // Lcd_TransmitStr((const char *) "Selected...     ");
+            Lcd_TransmitStr((const char *) "Seleccionado... ");
             change_state = CHANGE_SELECT_DONE;
         }
         
