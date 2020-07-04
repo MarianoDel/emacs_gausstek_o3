@@ -604,7 +604,8 @@ resp_t LCD_ShowSelectv2 (const char * p_text, sw_actions_t sw_action)
 #endif
 #ifdef LINE_LENGTH_16        
         // Lcd_TransmitStr((const char *) "Cont.     Select");
-        Lcd_TransmitStr((const char *) "SET    or    < >");        
+        // Lcd_TransmitStr((const char *) "SET    or    < >");
+        Lcd_TransmitStr((const char *) "<-> o Set Acepta");                
 #endif        
         show_select_state++;
         break;
@@ -684,7 +685,8 @@ resp_t LCD_ShowSelectv2 (const char * p_text, sw_actions_t sw_action)
         Lcd_TransmitStr((const char *) "Changing");
 #endif
 #ifdef LINE_LENGTH_16
-        Lcd_TransmitStr((const char *) "Changing...     ");
+        //TODO: si es encoder no hace falta
+        // Lcd_TransmitStr((const char *) "Changing...     ");
 #endif        
         show_select_state++;
         break;
@@ -735,8 +737,9 @@ resp_t LCD_EncoderOptionsOnOff (char * primer_renglon,
         LCD_1ER_RENGLON;
         Lcd_TransmitStr(primer_renglon);
         LCD_2DO_RENGLON;
-        Lcd_TransmitStr((const char *) "SET    or    < >");        
-
+        // Lcd_TransmitStr((const char *) "SET    or    < >");        
+        Lcd_TransmitStr((const char *) "<-> o Set Acepta");
+        
         options_curr_sel = *bool_value;
         display_on_or_off = 1;
         show_select_timer = TT_SHOW_SELECT_IN_ON;        
@@ -744,11 +747,11 @@ resp_t LCD_EncoderOptionsOnOff (char * primer_renglon,
         break;
 
     case OPTIONS_ONOFF_REDRAW:
-        Lcd_SetDDRAM(12);
+        Lcd_SetDDRAM(13);
         if (options_curr_sel)
-            Lcd_TransmitStr(" ON ");
+            Lcd_TransmitStr(" Si");
         else
-            Lcd_TransmitStr(" OFF");
+            Lcd_TransmitStr(" No");
 
         //espero que liberen switch para avanzar
         if (actions == selection_none)    
@@ -780,8 +783,8 @@ resp_t LCD_EncoderOptionsOnOff (char * primer_renglon,
             if (display_on_or_off)
             {
                 display_on_or_off = 0;
-                Lcd_SetDDRAM(12);
-                Lcd_TransmitStr("    ");
+                Lcd_SetDDRAM(13);
+                Lcd_TransmitStr("   ");
             
                 show_select_timer = TT_SHOW_SELECT_IN_OFF;
             }
@@ -854,7 +857,8 @@ resp_t LCD_EncoderChange (char * primer_renglon,
         LCD_1ER_RENGLON;
         Lcd_TransmitStr(primer_renglon);
         LCD_2DO_RENGLON;
-        Lcd_TransmitStr((const char *) "SET    or    < >");        
+        // Lcd_TransmitStr((const char *) "SET    or    < >");
+        Lcd_TransmitStr((const char *) "<-> o Set Acepta");                
 
         change_current_val = *orig_value;
         change_state_was_on = 1;
@@ -873,7 +877,8 @@ resp_t LCD_EncoderChange (char * primer_renglon,
 
             show_select_timer = TT_SHOW_SELECT_IN_ON;
             LCD_2DO_RENGLON;
-            Lcd_TransmitStr((const char *) "SET    or    ++>");                    
+            // Lcd_TransmitStr((const char *) "SET    or    ++>");
+            Lcd_TransmitStr((const char *) "++> o Set Acepta");                                
         }
 
         if (actions == selection_dwn) 
@@ -886,7 +891,8 @@ resp_t LCD_EncoderChange (char * primer_renglon,
 
             show_select_timer = TT_SHOW_SELECT_IN_ON;
             LCD_2DO_RENGLON;
-            Lcd_TransmitStr((const char *) "SET    or    <--");
+            // Lcd_TransmitStr((const char *) "SET    or    <--");
+            Lcd_TransmitStr((const char *) "<-- o Set Acepta");            
         }
 
         if (actions == selection_enter)
@@ -904,7 +910,8 @@ resp_t LCD_EncoderChange (char * primer_renglon,
                 Lcd_SetDDRAM(13);    //TODO: ver esto despues, pasarlo como info en estructura
                 Lcd_TransmitStr("   ");
                 LCD_2DO_RENGLON;
-                Lcd_TransmitStr((const char *) "SET    or    < >");        
+                // Lcd_TransmitStr((const char *) "SET    or    < >");
+                Lcd_TransmitStr((const char *) "<-> o Set Acepta");                
                 show_select_timer = TT_SHOW_SELECT_IN_OFF;
             }
             else

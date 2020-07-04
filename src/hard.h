@@ -116,6 +116,7 @@ typedef enum
 #define BUZZER_LONG_CMD        1
 #define BUZZER_HALF_CMD        2
 #define BUZZER_SHORT_CMD        3
+#define BUZZER_MULTI_CMD        4
 
 // Buzzer Timeouts
 #define TT_BUZZER_BIP_SHORT		100
@@ -124,6 +125,15 @@ typedef enum
 #define TT_BUZZER_BIP_HALF_WAIT    	800
 #define TT_BUZZER_BIP_LONG		2000
 #define TT_BUZZER_BIP_LONG_WAIT        2000
+// comando multiple tiempo
+#define TT_BUZZER_BIP_MARK1    250
+#define TT_BUZZER_BIP_SPACE1    500
+#define TT_BUZZER_BIP_MARK2    250
+#define TT_BUZZER_BIP_SPACE2    500
+#define TT_BUZZER_BIP_MARK3    500
+#define TT_BUZZER_BIP_SPACE3    500
+
+
 
 
 //Estados Externos de LED BLINKING

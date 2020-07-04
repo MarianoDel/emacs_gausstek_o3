@@ -33,6 +33,12 @@ typedef enum
     BUZZER_WAIT_COMMANDS = 0,
     BUZZER_MARK,
     BUZZER_SPACE,
+    BUZZER_MARK_1,
+    BUZZER_SPACE_1,
+    BUZZER_MARK_2,
+    BUZZER_SPACE_2,
+    BUZZER_MARK_3,
+    BUZZER_SPACE_3,
     BUZZER_TO_STOP
     
 } buzzer_state_t;
@@ -131,7 +137,11 @@ void BuzzerCommands(unsigned char command, unsigned char multiple)
 {
     if (command == BUZZER_STOP_CMD)
         buzzer_state = BUZZER_TO_STOP;
-    else 
+    else if (command == BUZZER_MULTI_CMD)
+    {
+        buzzer_state = BUZZER_MARK_1;
+    }
+    else
     {
         if (command == BUZZER_LONG_CMD)
         {
@@ -187,6 +197,57 @@ void UpdateBuzzer (void)
             }
             break;
 
+            //comandos multiples de distintos tiempos
+        case BUZZER_MARK_1:
+            BUZZER_ON;
+            buzzer_state = BUZZER_SPACE_1;
+            buzzer_timeout = TT_BUZZER_BIP_MARK1;
+            break;
+
+        case BUZZER_SPACE_1:
+            if (!buzzer_timeout)
+            {
+                BUZZER_OFF;
+                buzzer_state = BUZZER_MARK_2;
+                buzzer_timeout = TT_BUZZER_BIP_SPACE1;
+            }
+            break;
+
+        case BUZZER_MARK_2:
+            if (!buzzer_timeout)
+            {
+                BUZZER_ON;
+                buzzer_state = BUZZER_SPACE_2;
+                buzzer_timeout = TT_BUZZER_BIP_MARK2;
+            }
+            break;
+
+        case BUZZER_SPACE_2:
+            if (!buzzer_timeout)
+            {
+                BUZZER_OFF;
+                buzzer_state = BUZZER_MARK_3;
+                buzzer_timeout = TT_BUZZER_BIP_SPACE2;
+            }
+            break;
+
+        case BUZZER_MARK_3:
+            if (!buzzer_timeout)
+            {
+                BUZZER_ON;
+                buzzer_state = BUZZER_SPACE_3;
+                buzzer_timeout = TT_BUZZER_BIP_MARK3;
+            }
+            break;
+
+        case BUZZER_SPACE_3:
+            if (!buzzer_timeout)
+            {
+                BUZZER_OFF;
+                buzzer_state = BUZZER_TO_STOP;
+            }
+            break;
+            
         case BUZZER_TO_STOP:
         default:
             BUZZER_OFF;

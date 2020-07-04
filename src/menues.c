@@ -67,8 +67,8 @@ resp_t MENU_Main (mem_bkp_t * configurations)
     switch (menu_state)
     {
     case MENU_INIT:
-        resp = LCD_ShowBlink ("    Entering    ",
-                              "  Config Menu   ",
+        resp = LCD_ShowBlink ("  Entrando en   ",
+                              "Config Predeterm",
                               1,
                               BLINK_DIRECT);
 
@@ -93,7 +93,7 @@ resp_t MENU_Main (mem_bkp_t * configurations)
         if (CheckCW())
             actions = selection_up;
         
-        resp = LCD_ShowSelectv2((const char *) "Treatment Time  ",
+        resp = LCD_ShowSelectv2((const char *) "Tiempo Predeterm",
                                 actions);
 
         if (resp == resp_change)
@@ -123,7 +123,7 @@ resp_t MENU_Main (mem_bkp_t * configurations)
         if (CheckCW())
             actions = selection_up;
 
-        resp = LCD_ShowSelectv2((const char *) "Alarm           ",
+        resp = LCD_ShowSelectv2((const char *) "Alarma          ",
                                 actions);
 
         if (resp == resp_change)
@@ -185,7 +185,7 @@ resp_t MENU_Main (mem_bkp_t * configurations)
         if (CheckCW())
             actions = selection_up;
 
-        resp = LCD_ShowSelectv2((const char *) "End Configuration",
+        resp = LCD_ShowSelectv2((const char *) "Grabar config   ",
                                 actions);
 
         if (resp == resp_change)
@@ -196,10 +196,11 @@ resp_t MENU_Main (mem_bkp_t * configurations)
 
         if (resp == resp_selected)
         {
-            //TODO: ver que contesto cuando grabo y cuando no
+            LCD_EncoderOptionsOnOffReset();
             menu_state = MENU_END_CONF;
         }
-        else if (actions != selection_none)    //algo se cambio, aviso
+
+        if (actions != selection_none)    //algo se cambio, aviso
             resp = resp_change;
         
         break;
@@ -246,7 +247,7 @@ resp_t MENU_Main (mem_bkp_t * configurations)
             actions = selection_up;
 
         onoff = configurations->alarms_onoff;
-        resp = LCD_EncoderOptionsOnOff("Alarm           ",
+        resp = LCD_EncoderOptionsOnOff("Alarma          ",
                                        &onoff,
                                        actions);
 
@@ -291,8 +292,32 @@ resp_t MENU_Main (mem_bkp_t * configurations)
 
 
     case MENU_END_CONF:
-        menu_state = MENU_INIT;
-        resp = resp_finish;
+        if (CheckSET() > SW_NO)
+            actions = selection_enter;
+
+        if (CheckCCW())
+            actions = selection_dwn;
+
+        if (CheckCW())
+            actions = selection_up;
+
+        onoff = 1;
+        resp = LCD_EncoderOptionsOnOff("Grabar Salir    ",
+                                       &onoff,
+                                       actions);
+
+        if (resp == resp_finish)
+        {
+            if (onoff)
+                resp = resp_need_to_save;
+            else
+                resp = resp_finish;
+
+            menu_state = MENU_INIT;
+        }
+        else if (actions != selection_none)    //algo se cambio, aviso
+            resp = resp_change;
+
         break;
         
     default:

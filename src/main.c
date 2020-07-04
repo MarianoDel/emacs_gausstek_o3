@@ -412,7 +412,8 @@ int main(void)
             if (CheckSET() == SW_NO)
             {
                 if (configurations_in_mem.alarms_onoff)
-                    BuzzerCommands(BUZZER_LONG_CMD, 3);
+                    // BuzzerCommands(BUZZER_LONG_CMD, 3);
+                    BuzzerCommands(BUZZER_MULTI_CMD, 0);
 
                 RelayOff();
                 main_state = MAIN_INIT;
@@ -454,13 +455,16 @@ int main(void)
         case MAIN_IN_MAIN_MENU:
             resp = MENU_Main(&configurations_in_mem);
 
-            if (!timer_standby)
-                main_state = MAIN_INIT;
-            
             if (resp == resp_change)
                 timer_standby = 20000;
 
+            if (!timer_standby)
+                main_state = MAIN_INIT;
+
             if (resp == resp_finish)
+                main_state = MAIN_INIT;
+            
+            if (resp == resp_need_to_save)
             {
                 __disable_irq();
                 resp = WriteConfigurations();
