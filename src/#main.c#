@@ -454,11 +454,11 @@ int main(void)
         case MAIN_IN_MAIN_MENU:
             resp = MENU_Main(&configurations_in_mem);
 
-            if (!timer_standby)
-                main_state = MAIN_INIT;
-            
             if (resp == resp_change)
                 timer_standby = 20000;
+
+            if (!timer_standby)
+                main_state = MAIN_INIT;
 
             if (resp == resp_finish)
             {

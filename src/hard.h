@@ -104,6 +104,8 @@ typedef enum
     MAIN_PAUSED,    
     MAIN_RESUMING,
     MAIN_ENDING_TREATMENT,
+    MAIN_WAIT_SET_OR_MENU,
+    MAIN_SET_TIME,
     MAIN_IN_MAIN_MENU
     
 } main_state_t;
@@ -157,9 +159,9 @@ typedef enum {
 } resp_sw_t;
 
 #define SWITCHES_TIMER_RELOAD    5
-#define SWITCHES_THRESHOLD_FULL	300		//3 segundos
+#define SWITCHES_THRESHOLD_FULL	1000		//5 segundos
 #define SWITCHES_THRESHOLD_HALF	100		//1 segundo
-#define SWITCHES_THRESHOLD_MIN	5		//50 ms
+#define SWITCHES_THRESHOLD_MIN	5		//25 ms
 
 #define ENCODER_COUNTER_ROOF    10
 #define ENCODER_COUNTER_THRESHOLD    3

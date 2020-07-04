@@ -180,9 +180,12 @@ resp_t LCD_Scroll1 (const char *);
 resp_t LCD_Scroll2 (const char *);
 void LCD_Writel1 (char * l1);
 void LCD_Writel2 (char * l2);
-resp_t LCD_ShowSelectv2 (const char *, sw_actions_t);    
+resp_t LCD_ShowSelectv2 (const char *, sw_actions_t);
+void LCD_ShowSelectv2Reset (void);
 resp_t LCD_EncoderOptionsOnOff (char *, unsigned char *, sw_actions_t);
+void LCD_EncoderOptionsOnOffReset (void);
 resp_t LCD_EncoderChange (char *, unsigned short *, unsigned short, unsigned short, sw_actions_t);
+void LCD_EncoderChangeReset (void);
 
 void LCD_BigNumbersInit (void);
 void LCD_BigNumbers (unsigned char, unsigned char);

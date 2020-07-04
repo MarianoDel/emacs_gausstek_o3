@@ -19,10 +19,17 @@
 #define mem_bkp_t parameters_typedef
 
 // Exported Constants or Macros ------------------------------------------------
+#define MINIMUN_TIME_ALLOWED    1
+#define MAXIMUN_TIME_ALLOWED    180
 
 
 // Exported Functions ----------------------------------------------------------
+void MENU_Main_Reset (void);
 resp_t MENU_Main (mem_bkp_t *);
+
+void MENU_Encendido_Reset (void);
+resp_t MENU_Encendido (mem_bkp_t *);
+
 
     
 #endif    /* _MENUES_H_ */

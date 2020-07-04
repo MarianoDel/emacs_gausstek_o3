@@ -578,6 +578,11 @@ void LCD_BigNumbers (unsigned char line1_position, unsigned char number)
 // We need Switches Functions for the following functions CheckS1() & CheckS2() //
 //////////////////////////////////////////////////////////////////////////////////
 
+void LCD_ShowSelectv2Reset (void)
+{
+    show_select_state = SHOW_SELECT_INIT;
+}
+
 //funcion que muestra el string enviado en formato de menu
 //ademas v2 agrega el cont o select en el segundo renglon
 //respuestas
@@ -705,6 +710,11 @@ resp_t LCD_ShowSelectv2 (const char * p_text, sw_actions_t sw_action)
 }
 
 
+void LCD_EncoderOptionsOnOffReset (void)
+{
+    options_state = OPTIONS_ONOFF_INIT;
+}
+
 //recibe:
 // puntero al primer renglon de seleccion solo 12 caracteres
 // puntero al valor OFF->0 ON->1
@@ -816,6 +826,10 @@ resp_t LCD_EncoderOptionsOnOff (char * primer_renglon,
 }
 
 
+void LCD_EncoderChangeReset (void)
+{
+    change_state = CHANGE_INIT;
+}
 
 //recibe:
 // el primer renglon
@@ -887,8 +901,8 @@ resp_t LCD_EncoderChange (char * primer_renglon,
             if (change_state_was_on)
             {
                 change_state_was_on = 0;
-                Lcd_SetDDRAM(14);    //TODO: ver esto despues, pasarlo como info en estructura
-                Lcd_TransmitStr("  ");
+                Lcd_SetDDRAM(13);    //TODO: ver esto despues, pasarlo como info en estructura
+                Lcd_TransmitStr("   ");
                 LCD_2DO_RENGLON;
                 Lcd_TransmitStr((const char *) "SET    or    < >");        
                 show_select_timer = TT_SHOW_SELECT_IN_OFF;
@@ -919,8 +933,8 @@ resp_t LCD_EncoderChange (char * primer_renglon,
     //     break;
 
     case CHANGE_SHOW_AGAIN:
-        Lcd_SetDDRAM(14);    //TODO: ver esto despues, pasarlo como info en estructura
-        sprintf(s_current, "%02d", change_current_val);
+        Lcd_SetDDRAM(13);    //TODO: ver esto despues, pasarlo como info en estructura
+        sprintf(s_current, "%03d", change_current_val);
         Lcd_TransmitStr(s_current);
         change_state = CHANGE_WAIT_SELECT_IN_ON;
         break;
