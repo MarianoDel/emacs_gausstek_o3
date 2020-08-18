@@ -5,7 +5,7 @@
 // ## @Editor: Emacs - ggtags
 // ## @TAGS:   Global
 // ##
-// #### HARD.H #################################
+// #### HARD.C #################################
 //----------------------------------------------
 #include "hard.h"
 #include "stm32f0xx.h"
@@ -472,8 +472,6 @@ void UpdateRelayTimeout (void)
 //chequeo continuo del estado del relay
 void UpdateRelay (void)
 {
-    unsigned char edge = 0;
-
     if (relay_state == RLY_TO_ON)
     {
         //si me piden prender relay, y no hubo synchro previo
