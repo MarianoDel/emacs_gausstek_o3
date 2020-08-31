@@ -82,3 +82,6 @@
 * Modificaciones al Hard 30-06-2020
   - agregar un led!!!
   - diodo de inversion de polaridad en 12V
+
+* Placa ver 2.0 31-08-2020
+

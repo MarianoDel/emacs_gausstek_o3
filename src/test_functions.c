@@ -251,9 +251,9 @@ void TF_zcd (void)
     while (1)
     {
         if (AC_SYNC)
-            LCD_E_ON;
+            LED_ON;
         else
-            LCD_E_OFF;
+            LED_OFF;
     }
 }
 

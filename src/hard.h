@@ -15,8 +15,8 @@
 
 //-- Defines For Configuration -------------------
 //---- Configuration for Hardware Versions -------
-// #define HARDWARE_VERSION_1_1
-#define HARDWARE_VERSION_1_0
+#define HARDWARE_VERSION_2_0    //micro F030R8T6
+// #define HARDWARE_VERSION_1_0    //micro F030K6T6
 
 
 // #define SOFTWARE_VERSION_1_1
@@ -27,6 +27,142 @@
 //---- End of Features Configuration ----------
 
 // Exported Pinout Names -------------------------------------------------------
+#ifdef HARDWARE_VERSION_2_0
+// GPIOC pin13
+// GPIOC pin14
+// GPIOC pin15    NC
+// GPIOF pin0    
+// GPIOF pin1    NC
+
+//GPIOC pin0
+//GPIOC pin1
+//GPIOC pin2    ADC input V_SENSE_48V
+
+//GPIOC pin3    
+#define CTRL_BKL    ((GPIOC->ODR & 0x0008) != 0)
+#define CTRL_BKL_ON    (GPIOC->BSRR = 0x00000008)
+#define CTRL_BKL_OFF    (GPIOC->BSRR = 0x00080000)
+
+//GPIOA pin0    
+//GPIOA pin1    
+//GPIOA pin2    
+//GPIOA pin3    Lcd interface
+
+//GPIOF pin4
+#define LCD_E    ((GPIOF->ODR & 0x0010) != 0)
+#define LCD_E_ON    (GPIOF->BSRR = 0x00000010)
+#define LCD_E_OFF    (GPIOF->BSRR = 0x00100000)
+
+//GPIOF pin5    
+#define LCD_RS    ((GPIOF->ODR & 0x0020) != 0)
+#define LCD_RS_ON    (GPIOF->BSRR = 0x00000020)
+#define LCD_RS_OFF    (GPIOF->BSRR = 0x00200000)
+
+//GPIOA pin4
+#define LED    ((GPIOA->ODR & 0x0010) != 0)
+#define LED_ON    (GPIOA->BSRR = 0x00000010)
+#define LED_OFF    (GPIOA->BSRR = 0x00100000)
+
+//GPIOA pin5
+//GPIOA pin6    
+//GPIOA pin7    SPI1 Interface
+
+//GPIOC pin4    RFID Reset
+//GPIOC pin5    RFID Irq
+
+//GPIOB pin0    RFID CS
+#define RFID_CS ((GPIOB->ODR & 0x0001) != 0)
+#define RFID_CS_ON (GPIOB->BSRR = 0x00000001)
+#define RFID_CS_OFF (GPIOB->BSRR = 0x00010000)
+
+//GPIOB pin1    UVC OUT
+#define UVC_OUT ((GPIOB->IDR & 0x0002) != 0)
+
+//GPIOB pin2    NC
+
+//GPIOB pin10    
+#define ACT_R4 ((GPIOB->ODR & 0x0400) != 0)
+#define ACT_R4_ON (GPIOB->BSRR = 0x00000400)
+#define ACT_R4_OFF (GPIOB->BSRR = 0x04000000)
+
+//GPIOB pin11    
+#define ACT_R3 ((GPIOB->ODR & 0x0800) != 0)
+#define ACT_R3_ON (GPIOB->BSRR = 0x00000800)
+#define ACT_R3_OFF (GPIOB->BSRR = 0x08000000)
+
+//GPIOB pin12    NC
+
+//GPIOB pin13    
+#define ACT_R1 ((GPIOB->ODR & 0x2000) != 0)
+#define ACT_R1_ON (GPIOB->BSRR = 0x00002000)
+#define ACT_R1_OFF (GPIOB->BSRR = 0x20000000)
+
+//GPIOB pin14 
+
+//GPIOB pin15    
+#define ACT_R2 ((GPIOB->ODR & 0x8000) != 0)
+#define ACT_R2_ON (GPIOB->BSRR = 0x00008000)
+#define ACT_R2_OFF (GPIOB->BSRR = 0x80000000)
+
+//GPIOC pin6    NC
+//GPIOC pin7    NC
+//GPIOC pin8    NC
+//GPIOC pin9    NC
+    
+//GPIOA pin8    
+#define RELAY    ((GPIOA->ODR & 0x0100) != 0)
+#define RELAY_ON    (GPIOA->BSRR = 0x00000100)
+#define RELAY_OFF    (GPIOA->BSRR = 0x01000000)
+
+//GPIOA pin9    Encoder Switch
+#define ENC_SW ((GPIOA->IDR & 0x0200) == 0)
+#define SWITCH_SET    ENC_SW
+
+//GPIOA pin10    Encoder Data
+#define ENC_DT ((GPIOA->IDR & 0x0400) == 0)
+
+//GPIOA pin11    Encoder Clock
+#define ENC_CLK ((GPIOA->IDR & 0x0800) == 0)
+
+//GPIOA pin12    
+#define AC_SYNC ((GPIOA->IDR & 0x1000) == 0)
+
+//GPIOA pin13    NC
+
+//GPIOF pin6    
+#define BUZZER ((GPIOF->ODR & 0x0040) != 0)
+#define BUZZER_ON    (GPIOF->BSRR = 0x00000040)
+#define BUZZER_OFF    (GPIOF->BSRR = 0x00400000)
+
+//GPIOF pin7    IR Sensor Input
+#define IR_INPUT ((GPIOF->IDR & 0x0080) == 0)
+
+//GPIOA pin14    NC
+//GPIOA pin15    NC
+
+//GPIOC pin10    NC
+//GPIOC pin11    NC
+//GPIOC pin12    NC
+
+//GPIOD pin2    NC
+//GPIOB pin3    NC
+
+//GPIOB pin4     S2_PIR
+#define S2_PIR ((GPIOB->IDR & 0x0010) != 0)
+
+//GPIOB pin5     NC
+
+//GPIOB pin6     USART1 Tx
+//GPIOB pin7     USART1 Rx
+
+//GPIOB pin8    S1_O3
+#define S1_O3 ((GPIOB->IDR & 0x0100) == 0)
+#define SWITCH_O3    S1_O3
+
+//GPIOB pin9     NC
+#endif    //HARDWARE_VERSION_2_0
+
+#ifdef HARDWARE_VERSION_1_0
 //GPIOA pin0    
 //GPIOA pin1    
 //GPIOA pin2    
@@ -89,6 +225,7 @@
 #define CTRL_BKL_ON    (GPIOB->BSRR = 0x00000080)
 #define CTRL_BKL_OFF    (GPIOB->BSRR = 0x00800000)
 
+#endif    //HARDWARE_VER_1_0
 
 // Exported Types & Macros -----------------------------------------------------
 // Main Program States

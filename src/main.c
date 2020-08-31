@@ -561,8 +561,14 @@ void TimingDelay_Decrement(void)
 #ifdef WITH_EXTI
 void EXTI4_15_IRQHandler(void)
 {
+#ifdef HARDWARE_VERSION_1_0
     EXTI->PR |= 0x00000040;    //PA6
+#endif
 
+#ifdef HARDWARE_VERSION_2_0
+    EXTI->PR |= 0x00001000;    //PA12
+#endif
+    
     RelaySyncHandler();
     
 }
