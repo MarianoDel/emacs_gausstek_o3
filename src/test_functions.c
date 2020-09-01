@@ -278,5 +278,33 @@ void TF_Relay (void)
     }
 }
 
+void TF_RelayBoardOutputs (void)
+{
+    while (1)
+    {
+        if (ACT_R1)
+            ACT_R1_OFF;
+        else
+            ACT_R1_ON;
+
+        if (ACT_R2)
+            ACT_R2_OFF;
+        else
+            ACT_R2_ON;
+
+        if (ACT_R3)
+            ACT_R3_OFF;
+        else
+            ACT_R3_ON;
+
+        if (ACT_R4)
+            ACT_R4_OFF;
+        else
+            ACT_R4_ON;
+        
+        Wait_ms(1000);
+    }
+}
+
 
 //--- end of file ---//

@@ -277,7 +277,7 @@ typedef enum
 #define LED_NO_BLINKING    0
 #define LED_TREATMENT_STANDBY    1
 #define LED_TREATMENT_GENERATING    2
-#define LED_TREATMENT_ERROR    6
+#define LED_TREATMENT_PAUSED    3
 
 typedef enum {
     resp_ok = 0,

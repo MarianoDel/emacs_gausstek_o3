@@ -37,6 +37,7 @@ void TF_switchSET (void);
 void TF_zcd (void);
 void TF_zcd_by_int (void);
 void TF_Relay (void);
+void TF_RelayBoardOutputs (void);
 
 #endif    /* _TEST_FUNTIONS_H_ */
 

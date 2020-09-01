@@ -95,6 +95,8 @@ int main(void)
 
     // TF_lcdData();
 
+    // TF_RelayBoardOutputs ();
+
     // TF_lcdBklight();
 
     // TF_lcdBlink();
@@ -163,6 +165,7 @@ int main(void)
             
         case MAIN_STAND_BY_0:
             barrita = 0;
+            ChangeLed(LED_TREATMENT_STANDBY);
             main_state++;
             break;
 
@@ -241,6 +244,7 @@ int main(void)
 
                 treatment_running = 1;
                 barrita = 0;
+                ChangeLed(LED_TREATMENT_GENERATING);
                 main_state = MAIN_IN_TREATMENT;
             }
             break;
@@ -341,6 +345,7 @@ int main(void)
                 RelayOff();
                 // LCD_Scroll2Reset();
                 barrita = 0;
+                ChangeLed(LED_TREATMENT_PAUSED);
                 main_state = MAIN_PAUSED;
             }
             break;
@@ -416,6 +421,7 @@ int main(void)
                     BuzzerCommands(BUZZER_MULTI_CMD, 0);
 
                 RelayOff();
+                ChangeLed(LED_TREATMENT_STANDBY);
                 main_state = MAIN_INIT;
             }
             break;
@@ -499,6 +505,7 @@ int main(void)
             break;
         }
 
+        UpdateLed();
         UpdateRelay();
         UpdateSwitches();
         UpdateBuzzer();
