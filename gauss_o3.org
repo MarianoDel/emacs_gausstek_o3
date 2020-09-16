@@ -84,4 +84,73 @@
   - diodo de inversion de polaridad en 12V
 
 * Placa ver 2.0 31-08-2020
+** en el linker tuve que modificar tamanio de memoria
+   - por ahora todo el resto lo pude manejar con la version de HARDWARE
+     en hard.h
+
+
+
+* Modificaciones al soft pedidas el 09-09-2020
+** TODO En el título principal va WURTH ARGENTINA
+   Por ahora, podría ser que lo cambien…
+
+** TODO Menu oculto 
+   - Presionando Set por el tiempo que actualmente hay que presionarlo para acceder al menú oculto
+   - Ingrese Password (8 dígitos)
+
+*** Se agregan a las opciones actuales
+    - Modo operación
+    - Set password
+
+**** Modo operación
+     Manual - Tarjeta
+
+**** Set Password
+     8 dígitos, confirme, está seguro, esta re-contra seguro, (tres pasos de confirmación) graba
+     Tenemos un password nuestro que permite acceder al menú y que solamente lo sabremos nosotros
+
+     Después igual que como está ahora, para confirmar la grabación de los cambios…
+
+** Operacion Manual
+   Si estamos en manual, tal cual como está ahora
+
+** TODO Operacion con Tarjeta
+   Si estamos en funcionamiento tarjeta
+
+   Las tarjetas tienen grabado para cuantos tratamientos son válidas. 
+   Cada uso va descontando tratamientos hasta que quede vacía.
+
+*** Pantallas 
+    WURTH ARGENTINA
+    * Acerque Tarjeta * (blinking)
+
+    Al acercar la tarjeta
+
+    WURTH ARGENTINA
+    Sesiones: 1/xxx
+
+    Si acerca la tarjeta de nuevo
+    Aleje y Acerque
+    Tarjeta confirma
+
+    Si no la acerca digamos en los próximos 5 segundos
+    WURTH ARGENTINA
+    * Acerque Tarjeta * (blinking)
+
+    Si la acerca
+    Mantenga cerca (graba el descuento de la sesión)
+    Puntitos que se van escribiendo y finalmente Sesión aceptada por un par de segundos
+
+    WURTH ARGENTINA
+    Xx m – O3 comenzar
+    Y se queda ahí hasta que presiona O3 y empieza
+
+** Funcionamiento no resuelto
+    Quedaron blancos que no hubo forma que lo podamos discutir por teléfono, 
+    la mina de marketing es de madera.
+    Quede en que le mostrábamos el funcionamiento básico con tarjeta así como te lo describo y que 
+    podíamos adaptar o cambiar cualquier cosa siempre dentro de las limitaciones del caso.
+    Los blancos son: que pasa si el usuario no presiona O3 por algún motivo o si haciendo 
+    el tratamiento presiona pausa y no vuelve nunca
+
 
