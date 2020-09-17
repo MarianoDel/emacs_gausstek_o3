@@ -106,7 +106,8 @@
 **** Modo operación
      Manual - Tarjeta
 
-**** Set Password
+**** DONE Set Password
+     CLOSED: [2020-09-17 Thu 14:19]
      8 dígitos, confirme, está seguro, esta re-contra seguro, (tres pasos de confirmación) graba
      Tenemos un password nuestro que permite acceder al menú y que solamente lo sabremos nosotros
 

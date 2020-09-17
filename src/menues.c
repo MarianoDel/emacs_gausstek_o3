@@ -32,7 +32,8 @@ typedef enum {
     MENU_CONF_ALARM,
     MENU_CONF_TICKER,
     MENU_CONF_MODE,
-    MENU_CONF_PASS,    
+    MENU_CONF_PASS,
+    MENU_CONF_CONFIRM,        
     MENU_END_CONF
 
 } menu_state_t;
@@ -400,7 +401,93 @@ resp_t MENU_Main (mem_bkp_t * configurations)
         
         break;
 
+    case MENU_CONF_MODE:
+        if (CheckSET() > SW_NO)
+            actions = selection_enter;
 
+        if (CheckCCW())
+            actions = selection_dwn;
+
+        if (CheckCW())
+            actions = selection_up;
+
+
+        resp = LCD_EncoderShowSelect("Modo:  Manual   ",
+                                     "Modo:  Tarjeta  ",
+                                     actions,
+                                     &onoff);
+                                     
+        if (resp == resp_selected)
+        {
+            // configurations->operation_mode = onoff;
+            configurations->operation_mode = onoff - 1;            
+            menu_state = MENU_SHOW_TREATMENT_TIME;
+            resp = resp_continue;
+        }
+
+        if (actions != selection_none)    //algo se cambio, aviso
+            resp = resp_change;
+        
+        break;
+        
+    case MENU_CONF_PASS:
+        if (CheckSET() > SW_NO)
+            actions = selection_enter;
+
+        if (CheckCCW())
+            actions = selection_dwn;
+
+        if (CheckCW())
+            actions = selection_up;
+
+
+        resp = LCD_Password ("Nuevo Password: ",
+                             actions,
+                             &new_psw);
+                                     
+        if (resp == resp_selected)
+        {
+            configurations->new_psw = new_psw;
+            menu_state = MENU_CONF_CONFIRM;
+            resp = resp_continue;
+        }
+
+        if (actions != selection_none)    //algo se cambio, aviso
+            resp = resp_change;
+        
+        break;
+
+    case MENU_CONF_CONFIRM:
+        if (CheckSET() > SW_NO)
+            actions = selection_enter;
+
+        if (CheckCCW())
+            actions = selection_dwn;
+
+        if (CheckCW())
+            actions = selection_up;
+
+        onoff = 1;
+        resp = LCD_EncoderOptionsOnOff("cambia psw?  ",                                       
+                                       &onoff,
+                                       actions);
+
+        if (resp == resp_finish)
+        {
+            if (onoff)
+                configurations->saved_psw = configurations->new_psw;
+
+            menu_state = MENU_SHOW_TREATMENT_TIME;
+            resp = resp_continue;
+        }
+        else if (actions != selection_none)    //algo se cambio, aviso
+            resp = resp_change;
+
+        if (actions != selection_none)    //algo se cambio, aviso
+            resp = resp_change;
+        
+        break;
+        
     case MENU_END_CONF:
         if (CheckSET() > SW_NO)
             actions = selection_enter;

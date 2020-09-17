@@ -28,10 +28,12 @@ typedef struct {
     unsigned short ticker_time;    //5
 
     unsigned int saved_psw;    //9
+    unsigned int new_psw;    //13    
+    unsigned char operation_mode;    //14
     
-    unsigned char dummy1;    //10
-    unsigned char dummy2;    //11
-    unsigned char dummy3;    //12   
+    unsigned char dummy1;    //15
+    unsigned char dummy2;    //16
+    // unsigned char dummy3;    //17
 
 
 } parameters_typedef;
