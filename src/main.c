@@ -21,6 +21,8 @@
 #include "lcd_utils.h"
 #include "test_functions.h"
 #include "menues.h"
+#include "normal_mode.h"
+#include "card_mode.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -138,6 +140,8 @@ int main(void)
         configurations_in_mem.ticker_onoff = 1;        
         // configurations_in_mem.ticker_time = 60000;
         configurations_in_mem.ticker_time = 2000;
+        // configurations_in_mem.operation_mode = NORMAL_MODE;
+        configurations_in_mem.operation_mode = CARD_MODE;        
     }
 
     LCD_UtilsInit();
@@ -149,69 +153,23 @@ int main(void)
         {
         case MAIN_INIT:
             LCD_ClearScreen();
-            main_state = MAIN_WELCOME;
-            LCD_Scroll1Reset();
+            
+            if (configurations_in_mem.operation_mode == CARD_MODE)
+            {
+                Card_Mode_Standby_Reset ();
+                main_state = MAIN_CARD_MODE_STANDBY;
+            }
+            else
+            {
+                Normal_Mode_Standby_Reset ();
+                main_state = MAIN_NORMAL_MODE_STANDBY;
+            }
+            
             TIM16Enable();
             break;
             
-        case MAIN_WELCOME:
-            do {
-                // resp = LCD_ShowBlink ("GENERADOR OZONO ",
-                resp = LCD_ShowBlink ("WURTH ARGENTINA ",                                      
-                                      s_blank,
-                                      0,
-                                      BLINK_NO);
-            } while (resp != resp_finish);
-
-            main_state = MAIN_STAND_BY_0;
-            break;
-            
-        case MAIN_STAND_BY_0:
-            barrita = 0;
-            ChangeLed(LED_TREATMENT_STANDBY);
-            main_state++;
-            break;
-
-        case MAIN_STAND_BY_1:
-            switch (barrita)
-            {
-            case 0:
-                sprintf (s_lcd, "Tiempo: %3d     ",
-                         configurations_in_mem.treatment_time_min);
-
-                LCD_Writel2(s_lcd);
-                timer_barrita = 1200;
-                barrita++;
-                break;
-
-            case 1:
-                if (!timer_barrita)
-                {
-                    LCD_Writel2("O3: Inicia      ");
-                    timer_barrita = 1200;
-                    barrita++;
-                }
-                break;
-
-            case 2:
-                if (!timer_barrita)
-                {
-                    LCD_Writel2("Set: conf Tiempo");    
-                    timer_barrita = 1200;
-                    barrita++;
-                }
-                break;
-
-            case 3:
-                if (!timer_barrita)
-                    barrita = 0;
-
-                break;
-                
-            default:
-                barrita = 0;
-                break;
-            }
+        case MAIN_NORMAL_MODE_STANDBY:
+            Normal_Mode_Standby (&configurations_in_mem);
             
             if (CheckO3() > SW_NO)
             {
@@ -222,17 +180,29 @@ int main(void)
             }
 
             if (CheckSET() > SW_NO)
-            {
-                LCD_1ER_RENGLON;
-                Lcd_TransmitStr(" Entrando en    ");    
-                LCD_2DO_RENGLON;
-                Lcd_TransmitStr(" configuracion  ");
+                main_state = MAIN_ENTERING_SET_OR_MENU;
 
-                timer_standby = 5000;
-                main_state = MAIN_WAIT_SET_OR_MENU;
-            }
             break;
 
+        case MAIN_CARD_MODE_STANDBY:
+            Card_Mode_Standby (&configurations_in_mem);
+            
+            // if (CheckO3() > SW_NO)
+            // {
+            //     treatment_running_mins = configurations_in_mem.treatment_time_min;
+            //     treatment_running_secs = 0;
+                
+            //     main_state = MAIN_START_TREATMENT;
+            // }
+
+            // if (CheckSET() > SW_NO)
+            //     main_state = MAIN_ENTERING_SET_OR_MENU;
+
+            if (CheckSET() > SW_NO)
+                configurations_in_mem.dummy1 = 1;
+            
+            break;
+            
         case MAIN_START_TREATMENT:
             if (CheckO3() == SW_NO)
             {
@@ -371,8 +341,6 @@ int main(void)
                 }
             }
 
-            // resp = LCD_Scroll2 ("Presione O3 para continuar o SET para terminar");
-
             switch (barrita)
             {
             case 0:
@@ -428,7 +396,17 @@ int main(void)
                 main_state = MAIN_INIT;
             }
             break;
-            
+
+        case MAIN_ENTERING_SET_OR_MENU:
+            LCD_1ER_RENGLON;
+            Lcd_TransmitStr(" Entrando en    ");    
+            LCD_2DO_RENGLON;
+            Lcd_TransmitStr(" configuracion  ");
+
+            timer_standby = 5000;
+            main_state = MAIN_WAIT_SET_OR_MENU;
+            break;
+                
         case MAIN_WAIT_SET_OR_MENU:
             if ((CheckSET() == SW_NO) && (timer_standby))
             {
@@ -481,22 +459,25 @@ int main(void)
 
                 if (resp)
                 {
-                    do {
-                        resp = LCD_ShowBlink ("Memory Saved OK!",
-                                              s_blank,
-                                              0,
-                                              BLINK_NO);
-                    } while (resp != resp_finish);
+                    // do {
+                    //     resp = LCD_ShowBlink ("Memory Saved OK!",
+                    //                           s_blank,
+                    //                           0,
+                    //                           BLINK_NO);
+                    // } while (resp != resp_finish);
+                    LCD_Writel1("Memory Saved OK!");
+                    LCD_Writel2(s_blank);
                 }
                 else
                 {
-                    do {
-                        resp = LCD_ShowBlink ("Memory problems ",
-                                              "Not saved!      ",
-                                              0,
-                                              BLINK_NO);
-                    } while (resp != resp_finish);
-                    
+                    // do {
+                    //     resp = LCD_ShowBlink ("Memory problems ",
+                    //                           "Not saved!      ",
+                    //                           0,
+                    //                           BLINK_NO);
+                    // } while (resp != resp_finish);
+                    LCD_Writel1("Memory problems ");
+                    LCD_Writel2("Not saved!      ");
                 }
 
                 main_state = MAIN_INIT;
@@ -564,6 +545,9 @@ void TimingDelay_Decrement(void)
     HARD_Timeouts();
 
     UpdateTreatmentTimeout();
+
+    Normal_Mode_Timeouts();
+    Card_Mode_Timeouts();    
 
 }
 

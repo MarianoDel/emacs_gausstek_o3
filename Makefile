@@ -85,6 +85,8 @@ SRC += ./src/lcd.c
 SRC += ./src/lcd_utils.c
 SRC += ./src/test_functions.c
 SRC += ./src/menues.c
+SRC += ./src/normal_mode.c
+SRC += ./src/card_mode.c
 
 
 

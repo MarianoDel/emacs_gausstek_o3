@@ -38,6 +38,13 @@ typedef struct {
 
 } parameters_typedef;
 
+typedef enum {
+    MODE_UNKNOW = 0,
+    NORMAL_MODE,
+    CARD_MODE
+    
+} operation_modes_t;
+
 
 
 //- End of Data Struct to Backup -----------------------------------------------
