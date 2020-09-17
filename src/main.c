@@ -107,6 +107,8 @@ int main(void)
     
     // TF_zcd();
 
+    // TF_MenuFunction();
+
 // #ifdef WITH_EXTI    
 //     TF_zcd_by_int();
 // #endif
@@ -154,7 +156,8 @@ int main(void)
             
         case MAIN_WELCOME:
             do {
-                resp = LCD_ShowBlink ("GENERADOR OZONO ",
+                // resp = LCD_ShowBlink ("GENERADOR OZONO ",
+                resp = LCD_ShowBlink ("WURTH ARGENTINA ",                                      
                                       s_blank,
                                       0,
                                       BLINK_NO);

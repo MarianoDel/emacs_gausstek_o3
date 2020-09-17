@@ -26,10 +26,12 @@ typedef struct {
     unsigned char alarms_onoff;    //2
     unsigned char ticker_onoff;    //3
     unsigned short ticker_time;    //5
+
+    unsigned int saved_psw;    //9
     
-    unsigned char dummy1;    //6
-    unsigned char dummy2;    //7
-    unsigned char dummy3;    //8    
+    unsigned char dummy1;    //10
+    unsigned char dummy2;    //11
+    unsigned char dummy3;    //12   
 
 
 } parameters_typedef;

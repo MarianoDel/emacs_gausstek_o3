@@ -180,6 +180,10 @@ resp_t LCD_Scroll1 (const char *);
 resp_t LCD_Scroll2 (const char *);
 void LCD_Writel1 (char * l1);
 void LCD_Writel2 (char * l2);
+
+void LCD_PasswordReset (void);
+resp_t LCD_Password (const char *, sw_actions_t, unsigned int *);
+
 resp_t LCD_ShowSelectv2 (const char *, sw_actions_t);
 void LCD_ShowSelectv2Reset (void);
 resp_t LCD_EncoderOptionsOnOff (char *, unsigned char *, sw_actions_t);
@@ -202,7 +206,6 @@ unsigned char FuncChangeOnOff (unsigned char *);
 void FuncOptionsReset (void);
 void FuncShowSelectv2Reset (void);
 void FuncChangeReset (void);
-
 
 
 unsigned char FuncChangeDecimals (unsigned char *, unsigned char *, 

@@ -17,15 +17,22 @@
 
 
 // Module Private Types & Macros -----------------------------------------------
+#define DEFAULT_PASSWORD    0x00000022
+
 typedef enum {
     MENU_INIT = 0,
-    MENU_SHOW_TREATMENT_TIME,
+    MENU_GET_PASSWORD,
+    MENU_SHOW_TREATMENT_TIME,    
     MENU_SHOW_ALARM,
     MENU_SHOW_TICKER,
+    MENU_SHOW_MODE,
+    MENU_SHOW_PASS,    
     MENU_SHOW_END_CONF,
     MENU_CONF_TREATMENT_TIME,
     MENU_CONF_ALARM,
     MENU_CONF_TICKER,
+    MENU_CONF_MODE,
+    MENU_CONF_PASS,    
     MENU_END_CONF
 
 } menu_state_t;
@@ -63,6 +70,7 @@ resp_t MENU_Main (mem_bkp_t * configurations)
     sw_actions_t actions = selection_none;
     unsigned char onoff = 0;
     unsigned short time = 0;
+    unsigned int new_psw = 0;
 
     switch (menu_state)
     {
@@ -77,10 +85,50 @@ resp_t MENU_Main (mem_bkp_t * configurations)
             resp = resp_continue;
             if (CheckSET() == SW_NO)
             {
-                LCD_ShowSelectv2Reset();
+                LCD_PasswordReset();
                 menu_state++;
             }
         }
+        break;
+
+    case MENU_GET_PASSWORD:
+        if (CheckSET() > SW_NO)
+            actions = selection_enter;
+
+        if (CheckCCW())
+            actions = selection_dwn;
+
+        if (CheckCW())
+            actions = selection_up;
+
+        resp = LCD_Password ("Ingrese Password", actions, &new_psw);        
+
+        if (resp == resp_selected)
+        {
+            if ((new_psw == DEFAULT_PASSWORD) ||
+                (new_psw == configurations->saved_psw))
+            {
+                LCD_ShowSelectv2Reset();
+                menu_state = MENU_SHOW_TREATMENT_TIME;
+            }
+            else
+            {
+                do {
+                    resp = LCD_ShowBlink (" Password       ",
+                                          "  Incorrecto!!! ",
+                                          1,
+                                          BLINK_DIRECT);
+                    
+                } while (resp == resp_continue);
+
+                resp = resp_finish;
+                menu_state = MENU_INIT;
+            }
+        }
+
+        if (actions != selection_none)    //algo se cambio, aviso
+            resp = resp_change;
+
         break;
 
     case MENU_SHOW_TREATMENT_TIME:
@@ -112,7 +160,7 @@ resp_t MENU_Main (mem_bkp_t * configurations)
             resp = resp_change;
 
         break;
-
+        
     case MENU_SHOW_ALARM:
         if (CheckSET() > SW_NO)
             actions = selection_enter;
@@ -157,7 +205,7 @@ resp_t MENU_Main (mem_bkp_t * configurations)
                                 actions);
 
         if (resp == resp_change)
-            menu_state = MENU_SHOW_END_CONF;
+            menu_state = MENU_SHOW_MODE;
 
         if (resp == resp_change_all_up)
             menu_state = MENU_SHOW_ALARM;
@@ -174,6 +222,68 @@ resp_t MENU_Main (mem_bkp_t * configurations)
 
         break;
 
+    case MENU_SHOW_MODE:
+        if (CheckSET() > SW_NO)
+            actions = selection_enter;
+
+        if (CheckCCW())
+            actions = selection_dwn;
+
+        if (CheckCW())
+            actions = selection_up;
+        
+        resp = LCD_ShowSelectv2((const char *) "Modo Operacion  ",                                
+                                actions);
+
+        if (resp == resp_change)
+            menu_state = MENU_SHOW_PASS;
+
+        if (resp == resp_change_all_up)
+            menu_state = MENU_SHOW_MODE;
+
+        if (resp == resp_selected)
+        {
+            // onoff = configurations->ticker_onoff;
+            // LCD_EncoderOptionsOnOffReset();
+            menu_state = MENU_CONF_MODE;
+        }
+
+        if (actions != selection_none)    //algo se cambio, aviso
+            resp = resp_change;
+
+        break;
+
+    case MENU_SHOW_PASS:
+        if (CheckSET() > SW_NO)
+            actions = selection_enter;
+
+        if (CheckCCW())
+            actions = selection_dwn;
+
+        if (CheckCW())
+            actions = selection_up;
+        
+        resp = LCD_ShowSelectv2((const char *) "Set Password    ",
+                                actions);
+
+        if (resp == resp_change)
+            menu_state = MENU_SHOW_END_CONF;
+
+        if (resp == resp_change_all_up)
+            menu_state = MENU_SHOW_MODE;
+
+        if (resp == resp_selected)
+        {
+            // onoff = configurations->ticker_onoff;
+            // LCD_EncoderOptionsOnOffReset();
+            menu_state = MENU_CONF_PASS;
+        }
+
+        if (actions != selection_none)    //algo se cambio, aviso
+            resp = resp_change;
+
+        break;
+        
 
     case MENU_SHOW_END_CONF:
         if (CheckSET() > SW_NO)

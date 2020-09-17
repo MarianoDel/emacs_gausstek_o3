@@ -14,7 +14,10 @@
 #include "hard.h"
 #include "tim.h"
 #include "lcd_utils.h"
+#include "lcd.h"
 #include "gpio.h"
+
+#include <stdio.h>
 
 
 // Externals -------------------------------------------------------------------
@@ -303,6 +306,62 @@ void TF_RelayBoardOutputs (void)
             ACT_R4_ON;
         
         Wait_ms(1000);
+    }
+}
+
+
+void TF_MenuFunction (void)
+{
+    char s_lcd[20] = { 0 };
+    resp_t resp = resp_continue;
+    
+    LCD_UtilsInit();
+    CTRL_BKL_ON;
+
+    Wait_ms(500);
+    LCD_PasswordReset ();
+    unsigned int new_psw = 0;
+    
+    while (1)
+    {
+        sw_actions_t actions = selection_none;
+
+        if (CheckSET() > SW_NO)
+            actions = selection_enter;
+
+        if (CheckCCW())
+            actions = selection_dwn;
+
+        if (CheckCW())
+            actions = selection_up;
+        
+        resp = LCD_Password ("Ingrese Password", actions, &new_psw);
+
+        if (resp == resp_selected)
+        {
+            if (new_psw != 0x00000022)
+            {
+                LCD_1ER_RENGLON;
+                Lcd_TransmitStr("El nuevo pass:  ");
+                sprintf(s_lcd, "0x%08x        ", new_psw);
+                LCD_2DO_RENGLON;
+                Lcd_TransmitStr(s_lcd);
+                Wait_ms(5000);
+            }
+            else
+            {
+                LCD_1ER_RENGLON;
+                Lcd_TransmitStr("    Password    ");                
+                LCD_2DO_RENGLON;
+                Lcd_TransmitStr("   Correcto!!!  ");
+                Wait_ms(2000);
+            }
+
+            actions = selection_none;
+            LCD_PasswordReset ();
+        }
+        UpdateSwitches();
+        UpdateEncoder();
     }
 }
 

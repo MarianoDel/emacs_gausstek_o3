@@ -18,6 +18,9 @@
 #include <stdio.h>
 
 
+// Private Types Constants and Macros ------------------------------------------
+
+
 // Externals -------------------------------------------------------------------
 
 
@@ -73,13 +76,6 @@ volatile unsigned short scroll2_timer = 0;
 
 volatile unsigned short show_select_timer = 0;
 
-
-
-
-
-//-- Private Defines -----------------
-
-        
 
 // Module Functions ------------------------------------------------------------
 ///////////////////////////////////////////////////////
@@ -577,6 +573,232 @@ void LCD_BigNumbers (unsigned char line1_position, unsigned char number)
 //////////////////////////////////////////////////////////////////////////////////
 // We need Switches Functions for the following functions CheckS1() & CheckS2() //
 //////////////////////////////////////////////////////////////////////////////////
+// timeouts of password select menu
+#define TT_PSW_SELECT_IN_ON    TT_SHOW_SELECT_IN_ON
+#define TT_PSW_SELECT_IN_OFF    TT_SHOW_SELECT_IN_OFF
+
+#define SIZEOF_PASSWORD    8
+
+// Password select states
+typedef enum {
+    
+    PSW_SELECT_INIT = 0,
+    PSW_SELECT_1,
+    PSW_SELECT_2,
+    PSW_SELECT_CHANGE_NUM,
+    PSW_SELECT_CHANGE_NUM_1,
+    PSW_SELECT_CHANGE_NUM_2,
+    PSW_SELECT_ENDING,
+    PSW_SELECT_ENDING_1,
+    PSW_SELECT_ENDING_2,
+    PSW_SELECT_ENDED
+    
+} pass_t;
+
+
+#define psw_select_state    show_select_state
+#define psw_select_timer    show_select_timer
+void LCD_PasswordReset (void)
+{
+    psw_select_state = PSW_SELECT_INIT;
+}
+
+//funcion que para cambiar o elegir password
+//respuestas
+//resp_continue
+//resp_selected
+//resp_change
+//resp_change_all_up
+// sw_actions_t show_select_change_sw_action = 0;
+unsigned char blinking_on = 0;
+unsigned int password_num = 0x0;
+resp_t LCD_Password (const char * p_text, sw_actions_t sw_action, unsigned int * new_psw)
+{
+    resp_t resp = resp_continue;
+
+    switch (psw_select_state)
+    {
+    case PSW_SELECT_INIT:
+        LCD_1ER_RENGLON;
+        Lcd_TransmitStr(p_text);
+        LCD_2DO_RENGLON;
+        Lcd_TransmitStr((const char *) "00000000  Listo!");
+        // Lcd_TransmitStr((const char *) "          Listo!");
+        // LCD_2DO_RENGLON;
+        // memset(
+        password_num = 0x00000000;
+        blinking_on = 0;        
+        psw_select_state++;
+        break;
+
+    case PSW_SELECT_1:
+        if (sw_action == selection_none)
+        {
+            Lcd_SetDDRAM(0x40 + blinking_on);
+            Lcd_Command(CURSOR_ON);
+            Lcd_Command(BLINK_ON);
+            psw_select_state++;
+        }
+        break;
+
+    case PSW_SELECT_2:
+        // check switches actions
+        if (sw_action == selection_dwn)
+        {
+            if (blinking_on)
+                blinking_on--;
+
+            Lcd_SetDDRAM(0x40 + blinking_on);
+        }
+
+        if (sw_action == selection_up)
+        {
+            if (blinking_on < (SIZEOF_PASSWORD - 1))
+            {
+                blinking_on++;
+                Lcd_SetDDRAM(0x40 + blinking_on);
+            }
+            else
+            {
+                psw_select_state = PSW_SELECT_ENDING;                
+            }
+        }
+
+        if (sw_action == selection_enter)
+        {
+            psw_select_state = PSW_SELECT_CHANGE_NUM;
+        }
+        break;
+
+    case PSW_SELECT_CHANGE_NUM:
+        Lcd_Command(CURSOR_OFF);
+        Lcd_Command(BLINK_OFF);        
+        Lcd_SetDDRAM(0x40 + blinking_on);
+        Lcd_TransmitStr(" ");
+        psw_select_timer = TT_PSW_SELECT_IN_OFF;
+        psw_select_state++;
+        break;
+
+    case PSW_SELECT_CHANGE_NUM_1:
+        if ((!psw_select_timer) && (sw_action == selection_none))
+        {
+            Lcd_SetDDRAM(0x40 + blinking_on);
+
+            unsigned char a = (unsigned char) ((password_num >> (28 - blinking_on * 4)) & 0x0000000f);
+
+            Lcd_senddata('0' + a);
+            psw_select_timer = TT_PSW_SELECT_IN_ON;
+            psw_select_state = PSW_SELECT_CHANGE_NUM_2;
+        }
+        break;
+
+    case PSW_SELECT_CHANGE_NUM_2:
+        if (sw_action == selection_enter)
+        {            
+            psw_select_state = PSW_SELECT_1;
+        }
+
+        if (sw_action == selection_up)
+        {
+            unsigned char a = (unsigned char) ((password_num >> (28 - blinking_on * 4)) & 0x0000000f);            
+            
+            if (a < 9)
+            {
+                a++;
+                unsigned int temp = password_num;
+                temp &= (~(0x0000000f << (28 - blinking_on * 4)));
+                temp |= (a << (28 - blinking_on * 4));
+                password_num = temp;
+            }
+
+            psw_select_timer = 0;
+            psw_select_state = PSW_SELECT_CHANGE_NUM_1;
+        }
+
+        if (sw_action == selection_dwn)
+        {
+            unsigned char a = (unsigned char) ((password_num >> (28 - blinking_on * 4)) & 0x0000000f);
+            
+            if (a)
+            {
+                a--;
+                unsigned int temp = password_num;
+                temp &= (~(0x0000000f << (28 - blinking_on * 4)));
+                temp |= (a << (28 - blinking_on * 4));
+                password_num = temp;
+            }
+
+            psw_select_timer = 0;            
+            psw_select_state = PSW_SELECT_CHANGE_NUM_1;
+        }
+        
+        if ((!psw_select_timer) && (sw_action == selection_none))
+        {
+            Lcd_SetDDRAM(0x40 + blinking_on);
+            Lcd_TransmitStr(" ");
+            psw_select_timer = TT_PSW_SELECT_IN_OFF;
+            psw_select_state = PSW_SELECT_CHANGE_NUM_1;
+        }
+        break;
+
+    case PSW_SELECT_ENDING:
+        Lcd_Command(CURSOR_OFF);
+        Lcd_Command(BLINK_OFF);        
+        Lcd_SetDDRAM(0x40 + 10);
+        Lcd_TransmitStr("      ");
+        psw_select_timer = TT_PSW_SELECT_IN_OFF;
+        psw_select_state++;
+        break;
+
+    case PSW_SELECT_ENDING_1:
+        if ((!psw_select_timer) && (sw_action == selection_none))
+        {
+            Lcd_SetDDRAM(0x40 + 10);
+            Lcd_TransmitStr("Listo!");            
+            psw_select_timer = TT_PSW_SELECT_IN_ON;
+            psw_select_state = PSW_SELECT_ENDING_2;
+        }
+        break;
+
+    case PSW_SELECT_ENDING_2:
+        if (sw_action == selection_enter)
+        {
+            psw_select_state = PSW_SELECT_ENDED;
+        }
+
+        if (sw_action == selection_dwn)
+        {
+            blinking_on = SIZEOF_PASSWORD - 1;
+            psw_select_state = PSW_SELECT_1;
+        }
+        
+        if ((!psw_select_timer) && (sw_action == selection_none))
+        {
+            Lcd_SetDDRAM(0x40 + 10);
+            Lcd_TransmitStr("      ");
+            psw_select_timer = TT_PSW_SELECT_IN_OFF;
+            psw_select_state = PSW_SELECT_ENDING_1;
+        }
+        break;
+
+    case PSW_SELECT_ENDED:
+        if (sw_action == selection_none)
+        {
+            resp = resp_selected;
+            *new_psw = password_num;
+            psw_select_state = PSW_SELECT_INIT;
+        }
+        break;
+        
+        
+    default:
+        psw_select_state = PSW_SELECT_INIT;
+        break;
+    }
+
+    return resp;
+}
+
 
 void LCD_ShowSelectv2Reset (void)
 {

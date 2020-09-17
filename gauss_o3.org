@@ -91,7 +91,8 @@
 
 
 * Modificaciones al soft pedidas el 09-09-2020
-** TODO En el título principal va WURTH ARGENTINA
+** DONE En el título principal va WURTH ARGENTINA
+   CLOSED: [2020-09-16 Wed 07:59]
    Por ahora, podría ser que lo cambien…
 
 ** TODO Menu oculto 
