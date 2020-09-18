@@ -56,25 +56,41 @@ void TEST_Mfrc522 (void)
     {
         Wait_ms(2000);
         memset(id, '\0', sizeof(id));
-        status = MFRC522_Check(id);
+
+        // doing a request        
+        status = MFRC522_Request(PICC_REQIDL, id);
         if (status == MI_OK)
         {
             Usart1Send("MI_OK\n");            
-            for (unsigned char i = 0; i < sizeof(id); i++)
+            for (unsigned char i = 0; i < 4; i++)
             {                
-                sprintf(s_buf, "i: %d id: 0x%x\n",
+                sprintf(s_buf, "i: %d id: 0x%02x\n",
                         i,
                         *(id+i));
                 Usart1Send(s_buf);
                 Wait_ms(20);
             }
         }
-        else if (status == MI_ERR)
-            Usart1Send("MI_ERR\n");
-        else if (status == MI_NOTAGERR)
-            Usart1Send("MI_NOTAGERR\n");
-        else
-            Usart1Send("Unknown\n");
+        
+        // status = MFRC522_Check(id);
+        // if (status == MI_OK)
+        // {
+        //     Usart1Send("MI_OK\n");            
+        //     for (unsigned char i = 0; i < sizeof(id); i++)
+        //     {                
+        //         sprintf(s_buf, "i: %d id: 0x%x\n",
+        //                 i,
+        //                 *(id+i));
+        //         Usart1Send(s_buf);
+        //         Wait_ms(20);
+        //     }
+        // }
+        // else if (status == MI_ERR)
+        //     Usart1Send("MI_ERR\n");
+        // else if (status == MI_NOTAGERR)
+        //     Usart1Send("MI_NOTAGERR\n");
+        // else
+        //     Usart1Send("Unknown\n");
     }
 }
 

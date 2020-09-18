@@ -167,6 +167,12 @@
 
    https://github.com/fmilburn3/CardReader_RFID_RC522/blob/master/Mfrc522.cpp
 
+** Esta lib es bastante completa, la uso para ver como hace cosas raras
+   https://github.com/miguelbalboa/rfid/blob/master/src/MFRC522.cpp
+
+   esta es un poco mas reducida y se entiende mas rapido
+   https://github.com/fmilburn3/CardReader_RFID_RC522/blob/master/Mfrc522.cpp
+
 ** Armo dos modulos exportables
 *** mfrc522 comunica SPI con la placa RFID-RC522
     - para exportar facilmente requiere de las funciones de spi del micro
