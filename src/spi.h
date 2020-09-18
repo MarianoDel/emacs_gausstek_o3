@@ -12,8 +12,8 @@
 
 //Clock Peripherals
 #define RCC_SPI1_CLK 			(RCC->APB2ENR & 0x00001000)
-#define RCC_SPI1_CLK_ON 		RCC->APB2ENR |= 0x00001000
-#define RCC_SPI1_CLK_OFF		RCC->APB2ENR &= ~0x00001000
+#define RCC_SPI1_CLK_ON 		(RCC->APB2ENR |= 0x00001000)
+#define RCC_SPI1_CLK_OFF		(RCC->APB2ENR &= ~0x00001000)
 
 
 /* Uncomment the line below if you will use the SPI peripheral as a Master */

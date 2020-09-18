@@ -24,8 +24,6 @@ extern volatile unsigned char spi_bytes_left;
 /* Module Functions -----------------------------------------------------------*/
 void SPI_Config(void)
 {
-    unsigned int temp;
-    
     if (!RCC_SPI1_CLK)
         RCC_SPI1_CLK_ON;
 
@@ -34,7 +32,8 @@ void SPI_Config(void)
 
 #if defined SPI_MASTER
     // //SPI speed; clk / 256; master
-    // SPI1->CR1 |= SPI_CR1_BR_0 | SPI_CR1_BR_1 | SPI_CR1_BR_2;
+    SPI1->CR1 |= SPI_CR1_BR_0 | SPI_CR1_BR_1 | SPI_CR1_BR_2 |
+        SPI_CR1_MSTR;
     //SPI speed; clk / 16; master
     // SPI1->CR1 |=  SPI_CR1_BR_1 | SPI_CR1_BR_0;
     //SPI speed; clk / 8; master
@@ -51,20 +50,20 @@ void SPI_Config(void)
 
 #ifdef SPI_DATA_VALID_ON_FALLING_CLK
     //CPOL High; CPHA first clock
-    SPI1->CR1 |= SPI_CR1_MSTR | SPI_CR1_CPOL | SPI_CR1_SSM | SPI_CR1_SSI;
+    SPI1->CR1 |= SPI_CR1_CPOL | SPI_CR1_SSM | SPI_CR1_SSI;
 #endif
 #ifdef SPI_DATA_VALID_ON_RISING_CLK
     //CPOL High; CPHA second clock
-    SPI1->CR1 |= SPI_CR1_MSTR | SPI_CR1_CPOL | SPI_CR1_SSM | SPI_CR1_SSI | SPI_CR1_CPHA;
+    SPI1->CR1 |= SPI_CR1_CPOL | SPI_CR1_SSM | SPI_CR1_SSI | SPI_CR1_CPHA;
 #endif
     //thresh 8 bits; data 8 bits;
     SPI1->CR2 = SPI_CR2_FRXTH | SPI_CR2_DS_2 | SPI_CR2_DS_1 | SPI_CR2_DS_0;
 
-    //Activo en GPIOB PB3 clk y PB5 mosi
-    temp = GPIOB->AFR[0];
-    temp &= 0xFF0F0FFF;
-    temp |= 0x00000000;	//PB5 -> AF0 PB3 -> AF0
-    GPIOB->AFR[0] = temp;
+    unsigned int temp;
+    temp = GPIOA->AFR[0];
+    temp &= 0x000FFFFF;
+    temp |= 0x00000000;	//PA7 -> AF0 PA6 -> AF0 PA5 -> AF0
+    GPIOA->AFR[0] = temp;
 
     //habilito periferico
     SPI1->CR1 |= SPI_CR1_SPE;    

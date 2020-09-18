@@ -20,6 +20,7 @@
 #include "lcd.h"
 #include "lcd_utils.h"
 #include "test_functions.h"
+#include "test_mfrc522.h"
 #include "menues.h"
 #include "normal_mode.h"
 #include "card_mode.h"
@@ -32,7 +33,7 @@
 extern char s_blank [];
 parameters_typedef * pmem = (parameters_typedef *) (unsigned int *) FLASH_PAGE_FOR_BKP;
 mem_bkp_t configurations_in_mem;
-
+volatile unsigned char usart1_have_data = 0;
 
 // Globals ---------------------------------------------------------------------
 //-- Timers globals ----------------------------------
@@ -109,11 +110,19 @@ int main(void)
     
     // TF_zcd();
 
+    // TF_Usart1_RxTx ();
+    
     // TF_MenuFunction();
 
 // #ifdef WITH_EXTI    
 //     TF_zcd_by_int();
 // #endif
+
+    // TF_SPI();
+
+    TF_SPI_MFRC();
+    
+
 
     // End Hard Tests -------------------------------
 

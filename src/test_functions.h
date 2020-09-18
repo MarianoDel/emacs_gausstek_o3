@@ -39,6 +39,9 @@ void TF_zcd_by_int (void);
 void TF_Relay (void);
 void TF_RelayBoardOutputs (void);
 void TF_MenuFunction (void);
+void TF_Usart1_RxTx (void);
+void TF_SPI (void);
+void TF_SPI_MFRC (void);
 
 #endif    /* _TEST_FUNTIONS_H_ */
 

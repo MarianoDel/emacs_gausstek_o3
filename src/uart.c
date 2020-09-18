@@ -16,36 +16,24 @@
 #include <string.h>
 
 
-
-
-//--- Private typedef ---//
-//--- Private define ---//
-//--- Private macro ---//
-
-//#define USE_USARTx_TIMEOUT
-
-
-
-//--- Externals variables ---//
+// Externals -------------------------------------------------------------------
 extern volatile unsigned char usart1_have_data;
 
-//--- Private variables ---//
+// Globals ---------------------------------------------------------------------
 volatile unsigned char * ptx1;
 volatile unsigned char * ptx1_pckt_index;
 volatile unsigned char * prx1;
 volatile unsigned char tx1buff[SIZEOF_TXDATA];
 volatile unsigned char rx1buff[SIZEOF_RXDATA];
 
+// Module Private Types & Macros -----------------------------------------------
 
-//Reception buffer.
 
-//Transmission buffer.
+// Module Private Functions ----------------------------------------------------
 
-//--- Private function prototypes ---//
-//--- Private functions ---//
 
-//--- Exported functions ---//
-unsigned char ReadUsart1Buffer (unsigned char * bout, unsigned short max_len)
+// Module Functions ------------------------------------------------------------
+unsigned char Usart1ReadBuffer (unsigned char * bout, unsigned short max_len)
 {
     unsigned int len;
 
@@ -55,7 +43,6 @@ unsigned char ReadUsart1Buffer (unsigned char * bout, unsigned short max_len)
     {
         //el prx1 siempre llega adelantado desde la int, lo corto con un 0
         *prx1 = '\0';
-        prx1++;
         len += 1;
         memcpy(bout, (unsigned char *) rx1buff, len);
     }
@@ -75,7 +62,7 @@ void USART1_IRQHandler(void)
 {
     unsigned char dummy;
 
-    /* USART in Receive mode --------------------------------------------------*/
+    /* USART in mode Receiver --------------------------------------------------*/
     if (USART1->ISR & USART_ISR_RXNE)
     {
         dummy = USART1->RDR & 0x0FF;
@@ -86,10 +73,10 @@ void USART1_IRQHandler(void)
             {
                 *prx1 = '\0';
                 usart1_have_data = 1;
-                // if (LED)
-                // 	LED_OFF;
-                // else
-                // 	LED_ON;
+                if (LED)
+                	LED_OFF;
+                else
+                	LED_ON;
 
             }
             else
@@ -103,7 +90,6 @@ void USART1_IRQHandler(void)
     }
 
     /* USART in Transmit mode -------------------------------------------------*/
-
     if (USART1->CR1 & USART_CR1_TXEIE)
     {
         if (USART1->ISR & USART_ISR_TXE)
@@ -153,13 +139,10 @@ void Usart1SendSingle(unsigned char tosend)
 }
 
 
-void USART1Config(void)
+void Usart1Config(void)
 {
-    unsigned int temp;
-
     if (!USART1_CLK)
         USART1_CLK_ON;
-
 
     ptx1 = tx1buff;
     ptx1_pckt_index = tx1buff;
@@ -171,10 +154,11 @@ void USART1Config(void)
 //	USART1->CR1 = USART_CR1_RXNEIE | USART_CR1_RE | USART_CR1_UE;	//SIN TX
     USART1->CR1 = USART_CR1_RXNEIE | USART_CR1_RE | USART_CR1_TE | USART_CR1_UE;	//para pruebas TX
 
-    temp = GPIOA->AFR[1];
-    temp &= 0xFFFFF00F;
-    temp |= 0x00000110;	//PA10 -> AF1 PA9 -> AF1
-    GPIOA->AFR[1] = temp;
+    unsigned int temp;
+    temp = GPIOB->AFR[0];
+    temp &= 0x00FFFFFF;
+    temp |= 0x00000000;    //PB7 -> AF0 PB6 -> AF0
+    GPIOB->AFR[0] = temp;
 
     NVIC_EnableIRQ(USART1_IRQn);
     NVIC_SetPriority(USART1_IRQn, 7);

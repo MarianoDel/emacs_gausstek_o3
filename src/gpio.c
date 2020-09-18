@@ -105,7 +105,7 @@ void GPIO_Config (void)
     GPIOB->OSPEEDR = temp;
 
     temp = GPIOB->PUPDR;	//2 bits por pin
-    temp &= 0xFFFFFFFF;
+    temp &= 0xFFFFFFFF;        //
     temp |= 0x00000000;
     GPIOB->PUPDR = temp;
 
@@ -133,8 +133,8 @@ void GPIO_Config (void)
     GPIOC->OSPEEDR = temp;
 
     temp = GPIOC->PUPDR;	//2 bits por pin
-    temp &= 0xFFFFFFFF;
-    temp |= 0x00000000;
+    temp &= 0xFFFFF3FF;        //PC5 pullup
+    temp |= 0x00000400;
     GPIOC->PUPDR = temp;
 
 #endif

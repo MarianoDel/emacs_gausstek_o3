@@ -11,7 +11,7 @@
 #define __MFCR522_H_
 
 // Includes for Configuration --------------------------------------------------
-#include "stm32f3xx.h"    //uint8_t
+#include "stm32f0xx.h"    //uint8_t
 
 
 // Exported Types Constants & Macros -------------------------------------------

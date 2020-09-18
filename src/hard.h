@@ -63,11 +63,15 @@
 #define LED_ON    (GPIOA->BSRR = 0x00000010)
 #define LED_OFF    (GPIOA->BSRR = 0x00100000)
 
-//GPIOA pin5
-//GPIOA pin6    
-//GPIOA pin7    SPI1 Interface
+//GPIOA pin5    SPI1 clk
+//GPIOA pin6    SPI1 miso
+//GPIOA pin7    SPI1 mosi
 
 //GPIOC pin4    RFID Reset
+#define RFID_RST ((GPIOC->ODR & 0x0010) != 0)
+#define RFID_RST_ON (GPIOC->BSRR = 0x00000010)
+#define RFID_RST_OFF (GPIOC->BSRR = 0x00100000)
+
 //GPIOC pin5    RFID Irq
 
 //GPIOB pin0    RFID CS

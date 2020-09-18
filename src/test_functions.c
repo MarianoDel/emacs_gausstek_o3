@@ -11,17 +11,21 @@
 
 // Includes --------------------------------------------------------------------
 #include "test_functions.h"
+#include "test_mfrc522.h"
 #include "hard.h"
 #include "tim.h"
 #include "lcd_utils.h"
 #include "lcd.h"
 #include "gpio.h"
+#include "uart.h"
+#include "spi.h"
 
 #include <stdio.h>
 
 
 // Externals -------------------------------------------------------------------
 extern volatile unsigned short timer_standby;
+extern volatile unsigned char usart1_have_data;
 
 // Globals ---------------------------------------------------------------------
 
@@ -365,5 +369,66 @@ void TF_MenuFunction (void)
     }
 }
 
+
+void TF_Usart1_RxTx (void)
+{
+    for (unsigned char i = 0; i < 5; i++)
+    {
+        LED_ON;
+        Wait_ms(250);
+        LED_OFF;
+        Wait_ms(250);
+    }
+    
+    Usart1Config();
+
+    char s_to_send [100] = { 0 };
+    Usart1Send("Ready to test...\n");
+    while (1)
+    {
+        if (usart1_have_data)
+        {
+            usart1_have_data = 0;
+            
+            if (LED)
+                LED_OFF;
+            else
+                LED_ON;
+            
+            Usart1ReadBuffer((unsigned char *) s_to_send, 100);
+            Wait_ms(1000);
+            Usart1Send(s_to_send);
+        }
+    }
+}
+
+
+void TF_SPI (void)
+{
+    Usart1Config();
+    Usart1Send("go to config spi...\n");
+    
+    SPI_Config();
+    Usart1Send("spi on\n");
+    
+    while (1)
+    {
+        Wait_ms(500);
+        LED_ON;
+        SPI_Send_Single(0x77);
+        LED_OFF;
+    }
+}
+
+
+void TF_SPI_MFRC (void)
+{
+    Usart1Config();
+    Usart1Send("usart on\n");
+    SPI_Config();
+    Usart1Send("spi on\n");
+    
+    TEST_Mfrc522();
+}
 
 //--- end of file ---//

@@ -34,9 +34,9 @@
 
 
 //--- Exported functions ---//
-unsigned char ReadUsart1Buffer (unsigned char *, unsigned short);
+unsigned char Usart1ReadBuffer (unsigned char *, unsigned short);
 
-void USART1Config(void);
+void Usart1Config(void);
 void USART1_IRQHandler(void);
 void Usart1Send (char *);
 void Usart1SendUnsigned(unsigned char *, unsigned char);

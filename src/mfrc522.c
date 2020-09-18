@@ -10,11 +10,11 @@
 
 // Includes --------------------------------------------------------------------
 #include "mfrc522.h"
-#include "stm32f3xx.h"
-#include "usart.h"
+#include "stm32f0xx.h"
+#include "uart.h"
 #include "hard.h"
 #include "spi.h"
-#include "timer.h"
+#include "tim.h"
 
 #include <stdio.h>
 
@@ -25,10 +25,10 @@
 
 
 // Module Private Types & Macros -----------------------------------------------
-#define MFRC522_CS_ON    OUTA0_OFF
-#define MFRC522_CS_OFF    OUTA0_ON
-#define MFRC522_RST_ON    OUTA1_OFF
-#define MFRC522_RST_OFF    OUTA1_ON
+#define MFRC522_CS_ON    RFID_CS_OFF
+#define MFRC522_CS_OFF    RFID_CS_ON
+#define MFRC522_RST_ON    RFID_RST_OFF
+#define MFRC522_RST_OFF    RFID_RST_ON
 
 
 // Module Private Functions ----------------------------------------------------
@@ -51,7 +51,9 @@ void MFRC522_Init (void)
     MFRC522_Write(MFRC522_TReloadRegH, 0);
     MFRC522_Write(MFRC522_RFCfgReg, 0x70);			// 48dB gain
     MFRC522_Write(MFRC522_TxASKReg, 0x40);
-    MFRC522_Write(MFRC522_ModeReg, 0x3D);    
+    MFRC522_Write(MFRC522_ModeReg, 0x3D);
+
+    MFRC522_AntennaOn();
 }
 
 void MFRC522_SelfTest (void)
