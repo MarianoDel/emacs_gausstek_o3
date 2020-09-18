@@ -115,21 +115,23 @@ void Card_Mode_Standby (mem_bkp_t * configurations)
             LCD_Writel2("Tarjeta confirma");
             tt_card_internal = 5000;
             card_mode_state++;
+            configurations->dummy1 = 0;
         }
         break;
 
     case CARD_SHOW_SESSIONS_2:
         if (configurations->dummy1 == 1)
         {
+            configurations->dummy1 = 0;
             LCD_Writel1(" Mantenga cerca ");
             LCD_Writel2(s_blank);            
             card_mode_state++;
             configurations->dummy1 = 0;
-            LCD_2DO_RENGLON;
+            tt_card_internal = 0;
             card_disc = 0;
+            LCD_2DO_RENGLON;
         }
-        
-        if (!tt_card_internal)
+        else if (!tt_card_internal)
             card_mode_state = CARD_INIT;
 
         break;
