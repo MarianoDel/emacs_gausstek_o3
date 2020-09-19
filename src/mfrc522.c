@@ -145,6 +145,32 @@ uint8_t MFRC522_Check(uint8_t* id)
     return status;
 }
 
+
+uint8_t MFRC522_Check_NoHalt(uint8_t* id)
+{
+    uint8_t status;
+    status = MFRC522_Request(PICC_REQIDL, id);	// Find cards, return card type
+    if (status == MI_OK) {
+        status = MFRC522_Anticoll(id);	// Card detected. Anti-collision, return card serial number 4 bytes
+    }
+
+    return status;
+}
+
+
+
+// Used to exit the PCD from its authenticated state.
+// Remember to call this function after communicating with an authenticated PICC
+// otherwise no new communications can start.
+void MFRC522_StopCrypto1 (void)
+{
+    // Clear MFCrypto1On bit
+    // Status2Reg[7..0] bits are: TempSensClear I2CForceHS reserved reserved MFCrypto1On ModemState[2:0]
+    // PCD_ClearRegisterBitMask(Status2Reg, 0x08);
+    MFRC522_ClearBitMask (MFRC522_Status2Reg, 0x08);
+}
+
+
 uint8_t MFRC522_Compare(uint8_t * CardID, uint8_t * CompareID)
 {
     uint8_t i;

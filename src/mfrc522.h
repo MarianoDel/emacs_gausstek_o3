@@ -138,7 +138,11 @@ typedef enum
 
 
 // Exported Functions ----------------------------------------------------------
+// las mias
 unsigned char MFRC522_Verify_Version (void);
+uint8_t MFRC522_Check_NoHalt(uint8_t* id);
+void MFRC522_StopCrypto1 (void);
+
 void MFRC522_Init (void);
 void MFRC522_SelfTest (void);
 uint8_t MFRC522_Check (uint8_t * id);
