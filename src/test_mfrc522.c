@@ -15,6 +15,7 @@
 #include "uart.h"
 #include "hard.h"
 #include "tim.h"
+#include "card_utils.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -98,26 +99,38 @@ void TEST_Mfrc522 (void)
         // status = MFRC522_Check(id);
         if (status == MI_OK)
         {
-            // show card id
+            // show card uid
             Usart1Send("MI_OK\n");            
-            for (unsigned char i = 0; i < 4; i++)
-            {                
-                sprintf(s_buf, "i: %d id: 0x%x\n",
-                        i,
-                        *(id+i));
-                Usart1Send(s_buf);
-                Wait_ms(20);
-            }
+            sprintf(s_buf, "carduid: 0x%02x 0x%02x 0x%02x 0x%02x\n",
+                    *(id+0),
+                    *(id+1),
+                    *(id+2),
+                    *(id+3));                        
+                        
+            Usart1Send(s_buf);
+            Wait_ms(30);
 
-            // select tag
+            // show card bcc
+            sprintf(s_buf, "cardbcc: 0x%02x\n", *(id+4));
+            Usart1Send(s_buf);
+            Wait_ms(30);
+            
+            // select tag and show card type
             unsigned char size = MFRC522_SelectTag(id);            
             sprintf(s_buf, "cardtype: 0x%02x\n", size);
             Usart1Send(s_buf);
             Wait_ms(30);
 
-            // autorizo el bloque 1
+            // autorizo el sector 0 bloque 1 = 4
 #define BLOCK_TO_UNLOCK    4
-// #define BLOCK_TO_UNLOCK    0            
+// #define BLOCK_TO_UNLOCK    0
+            card_data_t card_data;
+            card_data_t card_harcoded;
+
+            card_data.sessions_orig = 300;
+            card_data.sessions_left = 300;
+            card_harcoded.sessions_orig = 300;
+            card_harcoded.sessions_left = 300;
             unsigned char s_key [] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
             status = MFRC522_Auth(PICC_AUTHENT1A, BLOCK_TO_UNLOCK, s_key, id);
             if (status == MI_OK)
@@ -126,40 +139,42 @@ void TEST_Mfrc522 (void)
                 Usart1Send(s_buf);
                 Wait_ms(30);
 
-                // for (unsigned char j = BLOCK_TO_UNLOCK; j < (BLOCK_TO_UNLOCK + 4); j++)
-                // {
                 unsigned char j = BLOCK_TO_UNLOCK;
-                    sprintf(s_buf, "\nreading block %d\n", j);
-                    Usart1Send(s_buf);
-                    Wait_ms(30);
+                sprintf(s_buf, "\nreading block %d\n", j);
+                Usart1Send(s_buf);
+                Wait_ms(30);
                     
-                    unsigned char readblock[16] = { 0 };
-                    status = MFRC522_ReadBlock(j, readblock);
+                unsigned char readblock[18] = { 0 };
+                status = MFRC522_ReadBlock(j, readblock);
+                if (status == MI_OK)
+                {
+                    status = Card_ProcessDataString(readblock, &card_data);
                     if (status == MI_OK)
                     {
-                        for (unsigned char i = 0; i < sizeof(readblock); i++)
-                        {                
-                            sprintf(s_buf, "0x%02x ", *(readblock+i));
-                            Usart1Send(s_buf);
-                            Wait_ms(20);
-                        }
-
-                        // unsigned char writedata [16] = {0x55, 0x55, 0x55, 0x55 };
-                        // status = MFRC522_WriteBlock(BLOCK_TO_UNLOCK, writedata);
-                        // if (status == MI_OK)
-                        //     Usart1Send("\nsaved ok!!!\n");
+                        Usart1Send("readed ok!!!\n");
+                            
                     }
                     else
                     {
-                        if (status == MI_ERR)
-                            Usart1Send("MI_ERR\n");
-                        else if (status == MI_NOTAGERR)
-                            Usart1Send("MI_NOTAGERR\n");
-                        else
-                            Usart1Send("Unknown\n");
-
-                        break;                        
+                        //write harcoded data
+                        status = Card_CreateDataString(readblock, &card_harcoded);
+                        status = MFRC522_WriteBlock(BLOCK_TO_UNLOCK, readblock);
+                        if (status == MI_OK)
+                            Usart1Send("\nsaved ok!!!\n");
+                            
                     }
+                }
+                else
+                {
+                    if (status == MI_ERR)
+                        Usart1Send("MI_ERR\n");
+                    else if (status == MI_NOTAGERR)
+                        Usart1Send("MI_NOTAGERR\n");
+                    else
+                        Usart1Send("Unknown\n");
+
+                    break;                        
+                }
                 // }
 
                 MFRC522_StopCrypto1();

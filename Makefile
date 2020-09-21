@@ -89,6 +89,7 @@ SRC += ./src/normal_mode.c
 SRC += ./src/card_mode.c
 
 SRC += ./src/mfrc522.c
+SRC += ./src/card_utils.c
 SRC += ./src/test_mfrc522.c
 
 
@@ -215,6 +216,12 @@ tests:
 	# ./a.out
 	# sino copiar funcion a testear al main de tests.c
 	gcc src/tests.c
+	./a.out
+
+tests_card:
+	# primero objetos de los modulos a testear, solo si son tipo HAL sin dependencia del hard
+	gcc -c src/card_utils.c -I. $(INCDIR)
+	gcc src/tests_card.c card_utils.o
 	./a.out
 
 
