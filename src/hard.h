@@ -283,6 +283,7 @@ typedef enum
 #define LED_TREATMENT_STANDBY    1
 #define LED_TREATMENT_GENERATING    2
 #define LED_TREATMENT_PAUSED    3
+#define LED_NO_RFID    4
 
 typedef enum {
     resp_ok = 0,

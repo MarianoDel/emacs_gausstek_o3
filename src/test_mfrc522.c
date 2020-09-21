@@ -121,7 +121,7 @@ void TEST_Mfrc522 (void)
             Usart1Send(s_buf);
             Wait_ms(30);
 
-            // autorizo el sector 0 bloque 1 = 4
+            // autorizo el sector 1 bloque 0 = 4
 #define BLOCK_TO_UNLOCK    4
 // #define BLOCK_TO_UNLOCK    0
             card_data_t card_data;

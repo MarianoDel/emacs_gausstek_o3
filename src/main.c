@@ -25,6 +25,9 @@
 #include "normal_mode.h"
 #include "card_mode.h"
 
+#include "spi.h"
+#include "uart.h"
+
 #include <stdio.h>
 #include <string.h>
 
@@ -120,7 +123,7 @@ int main(void)
 
     // TF_SPI();
 
-    TF_SPI_MFRC();
+    // TF_SPI_MFRC();
     
 
 
@@ -136,6 +139,12 @@ int main(void)
     unsigned char lcd_l1_was_on = 0;
     unsigned char last_secs = 0;
     unsigned char barrita = 0;
+
+    // para el lector de tarjetas
+    Usart1Config();
+    Usart1Send("usart on\n");
+    SPI_Config();
+    Usart1Send("spi on\n");
 
     // configuracion desde la memoria
     memcpy(&configurations_in_mem, pmem, sizeof(mem_bkp_t));
@@ -195,20 +204,22 @@ int main(void)
 
         case MAIN_CARD_MODE_STANDBY:
             Card_Mode_Standby (&configurations_in_mem);
-            
-            // if (CheckO3() > SW_NO)
-            // {
-            //     treatment_running_mins = configurations_in_mem.treatment_time_min;
-            //     treatment_running_secs = 0;
+
+            if ((configurations_in_mem.dummy1) &&
+                (CheckO3() > SW_NO))
+            {
+                configurations_in_mem.dummy1 = 0;
+                treatment_running_mins = configurations_in_mem.treatment_time_min;
+                treatment_running_secs = 0;
                 
-            //     main_state = MAIN_START_TREATMENT;
-            // }
+                main_state = MAIN_START_TREATMENT;
+            }
 
             // if (CheckSET() > SW_NO)
             //     main_state = MAIN_ENTERING_SET_OR_MENU;
 
-            if (CheckSET() > SW_NO)
-                configurations_in_mem.dummy1 = 1;
+            // if (CheckSET() > SW_NO)
+            //     configurations_in_mem.dummy1 = 1;
             
             break;
             
