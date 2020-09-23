@@ -169,10 +169,9 @@ void Card_Mode_Standby (mem_bkp_t * configurations)
                     status = Card_ProcessDataString(readblock, &card_data);
                     if (status == MI_OK)
                     {
-                        sprintf(s_lcd, "Sesiones: %d/%d",
-                                card_data.sessions_left,
-                                card_data.sessions_orig);
-
+                        sprintf(s_lcd, "Sesiones: %d    ", card_data.sessions_left);
+                        LCD_Writel1(s_lcd);
+                        sprintf(s_lcd, "Totales:  %d    ", card_data.sessions_orig);
                         LCD_Writel2(s_lcd);
                         tt_card_internal = 1500;
                         card_mode_state++;

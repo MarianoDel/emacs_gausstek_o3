@@ -159,7 +159,9 @@ int main(void)
         // configurations_in_mem.ticker_time = 60000;
         configurations_in_mem.ticker_time = 2000;
         // configurations_in_mem.operation_mode = NORMAL_MODE;
-        configurations_in_mem.operation_mode = CARD_MODE;        
+        configurations_in_mem.operation_mode = CARD_MODE;
+        //el dummy1 lo uso como habilitacion de O3 en tarjeta
+        configurations_in_mem.dummy1 = 0;
     }
 
     LCD_UtilsInit();
@@ -215,12 +217,12 @@ int main(void)
                 main_state = MAIN_START_TREATMENT;
             }
 
-            // if (CheckSET() > SW_NO)
-            //     main_state = MAIN_ENTERING_SET_OR_MENU;
-
-            // if (CheckSET() > SW_NO)
-            //     configurations_in_mem.dummy1 = 1;
-            
+            if (CheckSET() == SW_FULL)
+            {
+                timer_standby = 20000;
+                MENU_Main_Reset();
+                main_state = MAIN_IN_MAIN_MENU;
+            }            
             break;
             
         case MAIN_START_TREATMENT:
