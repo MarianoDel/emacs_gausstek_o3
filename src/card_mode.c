@@ -63,6 +63,12 @@ void Card_Mode_Standby_Reset (void)
 }
 
 
+void Card_Mode_Standby_Init (void)
+{
+    card_mode_state = CARD_INIT;
+}
+
+
 uint8_t id [20] = { 0 };
 #define BLOCK_TO_UNLOCK    4    //sector 1 bloque 0
 card_data_t card_data;
@@ -169,10 +175,16 @@ void Card_Mode_Standby (mem_bkp_t * configurations)
                     status = Card_ProcessDataString(readblock, &card_data);
                     if (status == MI_OK)
                     {
-                        sprintf(s_lcd, "Sesiones: %d    ", card_data.sessions_left);
+                        // sprintf(s_lcd, "Sesiones: %d    ", card_data.sessions_left);
+                        // LCD_Writel1(s_lcd);
+                        // sprintf(s_lcd, "Totales:  %d    ", card_data.sessions_orig);
+                        // LCD_Writel2(s_lcd);
+                        sprintf(s_lcd, "Sesiones %d/%d  ",
+                                card_data.sessions_left,
+                                card_data.sessions_orig);
+                        
                         LCD_Writel1(s_lcd);
-                        sprintf(s_lcd, "Totales:  %d    ", card_data.sessions_orig);
-                        LCD_Writel2(s_lcd);
+                        LCD_Writel2("Acerque Tarjeta*");
                         tt_card_internal = 1500;
                         card_mode_state++;
                     }

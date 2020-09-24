@@ -171,7 +171,7 @@ int main(void)
     {
         switch(main_state)
         {
-        case MAIN_INIT:
+        case MAIN_INIT:    //arranque inicial
             LCD_ClearScreen();
             
             if (configurations_in_mem.operation_mode == CARD_MODE)
@@ -186,6 +186,19 @@ int main(void)
             }
             
             TIM16Enable();
+            break;
+
+        case MAIN_INIT_FROM_TREATMENT:    //arranque cuando termino sesiones
+            if (configurations_in_mem.operation_mode == CARD_MODE)
+            {
+                Card_Mode_Standby_Init ();
+                main_state = MAIN_CARD_MODE_STANDBY;
+            }
+            else
+            {
+                Normal_Mode_Standby_Reset ();
+                main_state = MAIN_NORMAL_MODE_STANDBY;
+            }
             break;
             
         case MAIN_NORMAL_MODE_STANDBY:
@@ -415,7 +428,7 @@ int main(void)
 
                 RelayOff();
                 ChangeLed(LED_TREATMENT_STANDBY);
-                main_state = MAIN_INIT;
+                main_state = MAIN_INIT_FROM_TREATMENT;
             }
             break;
 

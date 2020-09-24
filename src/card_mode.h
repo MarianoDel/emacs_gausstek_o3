@@ -22,6 +22,7 @@
 
 // Exported Functions ----------------------------------------------------------
 void Card_Mode_Standby_Reset (void);
+void Card_Mode_Standby_Init (void);
 void Card_Mode_Standby (mem_bkp_t *);
 void Card_Mode_Timeouts (void);
 
