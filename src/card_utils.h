@@ -14,6 +14,12 @@
 
 // Exported Types Constants and Macros -----------------------------------------
 typedef struct {
+    union {
+        unsigned char uid_bytes [4];
+        unsigned int uid;
+    };
+    unsigned char bcc;
+    unsigned char type;
     int sessions_left;
     int sessions_orig;
     
@@ -29,6 +35,9 @@ typedef struct {
 unsigned char Card_ProcessDataString (unsigned char *, card_data_t *);
 unsigned char Card_CreateDataString (unsigned char *, card_data_t *);
 unsigned char Card_CompareDataString (unsigned char *, card_data_t *);
+
+void Card_ShowCardIdent (card_data_t *);
+void Card_ShowCardData (card_data_t *);
 
 #endif    /* _CARD_UTILS_H_ */
 
