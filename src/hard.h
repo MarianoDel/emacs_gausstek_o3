@@ -313,9 +313,9 @@ typedef enum {
 } resp_sw_t;
 
 #define SWITCHES_TIMER_RELOAD    5
-#define SWITCHES_THRESHOLD_FULL	1000		//5 segundos
-#define SWITCHES_THRESHOLD_HALF	100		//1 segundo
-#define SWITCHES_THRESHOLD_MIN	5		//25 ms
+#define SWITCHES_THRESHOLD_FULL	1000    //5 segundos
+#define SWITCHES_THRESHOLD_HALF	50    //0.5 segundos
+#define SWITCHES_THRESHOLD_MIN	5    //25 ms
 
 #define ENCODER_COUNTER_ROOF    10
 #define ENCODER_COUNTER_THRESHOLD    3

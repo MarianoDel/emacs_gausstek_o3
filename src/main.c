@@ -230,7 +230,7 @@ int main(void)
                 main_state = MAIN_START_TREATMENT;
             }
 
-            if (CheckSET() == SW_FULL)
+            if (CheckSET() > SW_MIN)
             {
                 timer_standby = 20000;
                 MENU_Main_Reset();
