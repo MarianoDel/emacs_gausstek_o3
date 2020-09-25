@@ -146,23 +146,6 @@ int main(void)
     SPI_Config();
     Usart1Send("spi on\n");
 
-    // configuracion desde la memoria
-    memcpy(&configurations_in_mem, pmem, sizeof(mem_bkp_t));
-
-    // check empty mem
-    if (configurations_in_mem.treatment_time_min == 0xff)
-    {
-        //mem empty go for defaults
-        configurations_in_mem.treatment_time_min = 10;
-        configurations_in_mem.alarms_onoff = 1;
-        configurations_in_mem.ticker_onoff = 1;        
-        // configurations_in_mem.ticker_time = 60000;
-        configurations_in_mem.ticker_time = 2000;
-        // configurations_in_mem.operation_mode = NORMAL_MODE;
-        configurations_in_mem.operation_mode = CARD_MODE;
-        //el dummy1 lo uso como habilitacion de O3 en tarjeta
-        configurations_in_mem.dummy1 = 0;
-    }
 
     LCD_UtilsInit();
     LCD_BigNumbersInit();
@@ -173,6 +156,24 @@ int main(void)
         {
         case MAIN_INIT:    //arranque inicial
             LCD_ClearScreen();
+
+            // configuracion desde la memoria
+            memcpy(&configurations_in_mem, pmem, sizeof(mem_bkp_t));
+
+            // check empty mem
+            if (configurations_in_mem.treatment_time_min == 0xff)
+            {
+                //mem empty go for defaults
+                configurations_in_mem.treatment_time_min = 10;
+                configurations_in_mem.alarms_onoff = 1;
+                configurations_in_mem.ticker_onoff = 1;        
+                // configurations_in_mem.ticker_time = 60000;
+                configurations_in_mem.ticker_time = 2000;
+                // configurations_in_mem.operation_mode = NORMAL_MODE;
+                configurations_in_mem.operation_mode = CARD_MODE;
+                //el dummy1 lo uso como habilitacion de O3 en tarjeta
+                configurations_in_mem.dummy1 = 0;
+            }
             
             if (configurations_in_mem.operation_mode == CARD_MODE)
             {
@@ -494,26 +495,15 @@ int main(void)
 
                 if (resp)
                 {
-                    // do {
-                    //     resp = LCD_ShowBlink ("Memory Saved OK!",
-                    //                           s_blank,
-                    //                           0,
-                    //                           BLINK_NO);
-                    // } while (resp != resp_finish);
-                    LCD_Writel1("Memory Saved OK!");
-                    LCD_Writel2(s_blank);
+                    LCD_Writel1("Memoria grabada ");
+                    LCD_Writel2(" correctamente  ");
                 }
                 else
                 {
-                    // do {
-                    //     resp = LCD_ShowBlink ("Memory problems ",
-                    //                           "Not saved!      ",
-                    //                           0,
-                    //                           BLINK_NO);
-                    // } while (resp != resp_finish);
-                    LCD_Writel1("Memory problems ");
-                    LCD_Writel2("Not saved!      ");
+                    LCD_Writel1("  Problemas!!!  ");
+                    LCD_Writel2("Memoria no graba");
                 }
+                Wait_ms(1000);                    
 
                 main_state = MAIN_INIT;
             }

@@ -952,6 +952,7 @@ void LCD_EncoderShowSelectReset (void)
 //funcion que permite seleccionar entre 2 opciones
 //primer string siempre permanente
 //segundo, primera opcion
+// respuesta del argumento 1 o 2 segun el renglon
 //respuestas
 //resp_continue
 //resp_selected

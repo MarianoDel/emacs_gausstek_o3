@@ -419,8 +419,11 @@ resp_t MENU_Main (mem_bkp_t * configurations)
                                      
         if (resp == resp_selected)
         {
-            // configurations->operation_mode = onoff;
-            configurations->operation_mode = onoff - 1;            
+            if (onoff == 2)
+                configurations->operation_mode = CARD_MODE;
+            else
+                configurations->operation_mode = NORMAL_MODE;
+
             menu_state = MENU_SHOW_TREATMENT_TIME;
             resp = resp_continue;
         }
