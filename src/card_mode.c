@@ -295,7 +295,9 @@ void Card_Mode_Standby (mem_bkp_t * configurations)
                             {
                                 Usart1Send("tarjetas con misma data\n");
                                 LCD_Writel1(" Mantenga cerca ");
+                                LCD_Writel2(s_blank);
                                 LCD_2DO_RENGLON;
+                                card_disc = 0;
                                 tt_card_internal = 0;
                                 card_mode_state = CARD_DISCOUNT;
                             }
@@ -325,7 +327,8 @@ void Card_Mode_Standby (mem_bkp_t * configurations)
             }
         }
 
-        if (!tt_card_internal2)
+        if ((card_mode_state == CARD_SHOW_SESSIONS_MOVE_CLOSE) &&
+            (!tt_card_internal2))
         {
             switch (card_mode_internal_state)
             {
