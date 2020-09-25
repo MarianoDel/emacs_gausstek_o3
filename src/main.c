@@ -471,7 +471,7 @@ int main(void)
                 timer_standby = 20000;
             
             if ((resp == resp_finish) || (!timer_standby))
-                main_state = MAIN_INIT;
+                main_state = MAIN_INIT_FROM_TREATMENT;
             
             break;
 
