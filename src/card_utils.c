@@ -30,12 +30,6 @@
 
 // Module Functions ------------------------------------------------------------
 
-// guarda datos de tarjeta en una estructura card_data_t
-void Card_SaveCardData (card_data_t * cd, uint8_t * id)
-{
-    
-}
-
 // compara la estructura de indentificacion de dos tarjetas
 unsigned char Card_CompareCardIdent (card_data_t * cd1, card_data_t * cd2)
 {
@@ -56,7 +50,8 @@ unsigned char Card_CompareCardData (card_data_t * cd1, card_data_t * cd2)
     unsigned char status = MI_ERR;
 
     if ((cd1->sessions_left == cd2->sessions_left) &&
-        (cd1->sessions_orig == cd2->sessions_orig))
+        (cd1->sessions_orig == cd2->sessions_orig) &&
+        (cd1->sessions_time == cd2->sessions_time))
         status = MI_OK;
 
     return status;
@@ -71,6 +66,7 @@ void Card_CopyCard (card_data_t * copy_cd, card_data_t * cd)
     copy_cd->type = cd->type;
     copy_cd->sessions_left = cd->sessions_left;
     copy_cd->sessions_orig = cd->sessions_orig;
+    copy_cd->sessions_time = cd->sessions_time;    
 }
 
 
@@ -82,6 +78,7 @@ void Card_EmptyCard (card_data_t * cd)
     cd->type = 0;
     cd->sessions_left = 0;
     cd->sessions_orig = 0;
+    cd->sessions_time = 0;
 }
 
 
@@ -91,9 +88,10 @@ void Card_ShowCardData (card_data_t * cd)
     char s_send [40] = { 0 };
     
     // show card uid
-    sprintf(s_send, "sesions left: %d orig: %d\n",
+    sprintf(s_send, "sesions left: %d orig: %d time: %d\n",
             cd->sessions_left,
-            cd->sessions_orig);
+            cd->sessions_orig,
+            cd->sessions_time);    
 
     Usart1Send(s_send);
     Wait_ms(30);
@@ -141,20 +139,26 @@ unsigned char Card_ProcessDataString (unsigned char * str, card_data_t * data)
     if ((*(wstr+0) == 'S') &&
         (*(wstr+1) == ':') &&
         (*(wstr+5) == ':') &&
-        (*(wstr+9) == ':'))
+        (*(wstr+9) == ':') &&
+        (*(wstr+13) == ':'))
     {
         char left [4] = { 0 };
-        char orig [4] = { 0 };        
+        char orig [4] = { 0 };
+        char time [4] = { 0 };
         strncpy(left, (wstr+2), 3);
         strncpy(orig, (wstr+6), 3);
+        strncpy(time, (wstr+10), 3);
         data->sessions_left = atoi(left);
         data->sessions_orig = atoi(orig);
+        data->sessions_time = atoi(time);
 
         //sanity checks
         if ((data->sessions_left >= 0) &&
             (data->sessions_left < 1000) &&
             (data->sessions_orig > 0) &&
-            (data->sessions_orig < 1000))
+            (data->sessions_orig < 1000) &&
+            (data->sessions_time > 0) &&
+            (data->sessions_time <= 100))
         {
             if (data->sessions_left <= data->sessions_orig)
                 status = MI_OK;
@@ -176,11 +180,17 @@ unsigned char Card_CreateDataString (unsigned char * str, card_data_t * data)
     if ((data->sessions_left >= 0) &&
         (data->sessions_left < 1000) &&
         (data->sessions_orig > 0) &&
-        (data->sessions_orig < 1000))
+        (data->sessions_orig < 1000) &&
+        (data->sessions_time > 0) &&
+        (data->sessions_time <= 100))
     {
         if (data->sessions_left <= data->sessions_orig)
         {
-            sprintf(wstr, "S:%03d:%03d:", data->sessions_left, data->sessions_orig);
+            sprintf(wstr, "S:%03d:%03d:%03d:",
+                    data->sessions_left,
+                    data->sessions_orig,
+                    data->sessions_time);
+            
             status = MI_OK;
         }
     }
@@ -199,7 +209,8 @@ unsigned char Card_CompareDataString (unsigned char * str, card_data_t * data)
     if (status == MI_OK)
     {
         if ((data->sessions_orig != card_to_cmp.sessions_orig) ||
-            (data->sessions_left != card_to_cmp.sessions_left))
+            (data->sessions_left != card_to_cmp.sessions_left) ||
+            (data->sessions_time != card_to_cmp.sessions_time))
             status = MI_ERR;
     }
 

@@ -370,13 +370,13 @@ void Card_Mode_Standby (mem_bkp_t * configurations)
             else
             {
                 // reviso si puedo grabar
-                card_data_last.sessions_left--;
-                Card_CreateDataString((unsigned char *)s_lcd, &card_data_last);
+                card_data_current.sessions_left--;
+                Card_CreateDataString((unsigned char *)s_lcd, &card_data_current);
                 if (MFRC522_WriteBlock(BLOCK_TO_UNLOCK, (uint8_t *)s_lcd) == MI_OK)
                 {
                     if (MFRC522_ReadBlock(BLOCK_TO_UNLOCK, (uint8_t *)s_lcd) == MI_OK)
                     {
-                        if (Card_CompareDataString((unsigned char *)s_lcd, &card_data_last) == MI_OK)
+                        if (Card_CompareDataString((unsigned char *)s_lcd, &card_data_current) == MI_OK)
                             card_mode_state = CARD_TO_INIT_SESSION;
                         else
                             Usart1Send("card verify error!\n");
@@ -398,7 +398,8 @@ void Card_Mode_Standby (mem_bkp_t * configurations)
     case CARD_TO_INIT_SESSION:
         if (!tt_card_internal)
         {
-            configurations->dummy1 = 1;
+            // en dummy1 le paso el tiempo de sesion de tarjeta
+            configurations->dummy1 = card_data_current.sessions_time;
             LCD_Writel1("Listo para      ");
             LCD_Writel2(" iniciar sesion ");
             tt_card_internal = 1000;

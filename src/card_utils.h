@@ -14,14 +14,19 @@
 
 // Exported Types Constants and Macros -----------------------------------------
 typedef struct {
+    
+    // card_ident
     union {
         unsigned char uid_bytes [4];
         unsigned int uid;
     };
     unsigned char bcc;
     unsigned char type;
+
+    // card_data
     int sessions_left;
     int sessions_orig;
+    unsigned char sessions_time;
     
 } card_data_t;
 

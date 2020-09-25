@@ -223,8 +223,8 @@ int main(void)
             if ((configurations_in_mem.dummy1) &&
                 (CheckO3() > SW_NO))
             {
+                treatment_running_mins = configurations_in_mem.dummy1;
                 configurations_in_mem.dummy1 = 0;
-                treatment_running_mins = configurations_in_mem.treatment_time_min;
                 treatment_running_secs = 0;
                 
                 main_state = MAIN_START_TREATMENT;

@@ -23,7 +23,7 @@
 // Externals -------------------------------------------------------------------
 extern void MFRC522_CS_Enable(void);
 extern void MFRC522_CS_Disable(void);
-
+extern uint8_t Card_Mode_Check_And_Select (card_data_t *);
 
 // Globals ---------------------------------------------------------------------
 
@@ -53,85 +53,34 @@ void TEST_Mfrc522 (void)
     // if (INA4)
     //     Usart1Send("INA4 Enabled\n");
 
+    card_data_t card_new;
+    card_data_t card_harcoded;
+    
+    card_harcoded.sessions_left = 999;
+    card_harcoded.sessions_orig = 999;
+    card_harcoded.sessions_time = 1;            
+    
     while (1)
     {
         Wait_ms(2000);
-        memset(id, '\0', sizeof(id));
-
-        // doing only a request, get the type of card
-        // status = MFRC522_Request(PICC_REQIDL, id);
-        // if (status == MI_OK)
-        // {
-        //     Usart1Send("MI_OK\n");            
-        //     for (unsigned char i = 0; i < sizeof(id); i++)
-        //     {                
-        //         sprintf(s_buf, "i: %d id: 0x%02x\n",
-        //                 i,
-        //                 *(id+i));
-        //         Usart1Send(s_buf);
-        //         Wait_ms(20);
-        //     }
-        // }
-
-        // check for the card id and halt
-        // status = MFRC522_Check(id);
-        // if (status == MI_OK)
-        // {
-        //     Usart1Send("MI_OK\n");            
-        //     for (unsigned char i = 0; i < sizeof(id); i++)
-        //     {                
-        //         sprintf(s_buf, "i: %d id: 0x%x\n",
-        //                 i,
-        //                 *(id+i));
-        //         Usart1Send(s_buf);
-        //         Wait_ms(20);
-        //     }
-        // }
-        // else if (status == MI_ERR)
-        //     Usart1Send("MI_ERR\n");
-        // else if (status == MI_NOTAGERR)
-        //     Usart1Send("MI_NOTAGERR\n");
-        // else
-        //     Usart1Send("Unknown\n");
-
-        // select tag
-        status = MFRC522_Check_NoHalt(id);
-        // status = MFRC522_Check(id);
+        Card_EmptyCard(&card_new);
+        
+        status = Card_Mode_Check_And_Select(&card_new);
+        
         if (status == MI_OK)
         {
-            // show card uid
-            Usart1Send("MI_OK\n");            
-            sprintf(s_buf, "carduid: 0x%02x 0x%02x 0x%02x 0x%02x\n",
-                    *(id+0),
-                    *(id+1),
-                    *(id+2),
-                    *(id+3));                        
-                        
-            Usart1Send(s_buf);
-            Wait_ms(30);
+            Card_ShowCardIdent(&card_new);
 
-            // show card bcc
-            sprintf(s_buf, "cardbcc: 0x%02x\n", *(id+4));
-            Usart1Send(s_buf);
-            Wait_ms(30);
             
-            // select tag and show card type
-            unsigned char size = MFRC522_SelectTag(id);            
-            sprintf(s_buf, "cardtype: 0x%02x\n", size);
-            Usart1Send(s_buf);
-            Wait_ms(30);
-
             // autorizo el sector 1 bloque 0 = 4
 #define BLOCK_TO_UNLOCK    4
-// #define BLOCK_TO_UNLOCK    0
-            card_data_t card_data;
-            card_data_t card_harcoded;
-
-            card_data.sessions_orig = 300;
-            card_data.sessions_left = 300;
-            card_harcoded.sessions_orig = 300;
-            card_harcoded.sessions_left = 300;
             unsigned char s_key [] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
+            *(id+0) = card_new.uid_bytes[0];
+            *(id+1) = card_new.uid_bytes[1];
+            *(id+2) = card_new.uid_bytes[2];
+            *(id+3) = card_new.uid_bytes[3];
+            *(id+4) = card_new.bcc;
+            
             status = MFRC522_Auth(PICC_AUTHENT1A, BLOCK_TO_UNLOCK, s_key, id);
             if (status == MI_OK)
             {
@@ -148,20 +97,29 @@ void TEST_Mfrc522 (void)
                 status = MFRC522_ReadBlock(j, readblock);
                 if (status == MI_OK)
                 {
-                    status = Card_ProcessDataString(readblock, &card_data);
+                    status = Card_ProcessDataString(readblock, &card_new);
                     if (status == MI_OK)
                     {
                         Usart1Send("readed ok!!!\n");
-                            
+                        if (Card_CompareCardData(&card_new, &card_harcoded) == MI_OK)
+                            Usart1Send("same data as harcoded\n");
+                        else
+                        {
+                            //no es bueno, cambiada o esta vacia, grabo
+                            //write harcoded data
+                            status = Card_CreateDataString(readblock, &card_harcoded);
+                            status = MFRC522_WriteBlock(BLOCK_TO_UNLOCK, readblock);
+                            if (status == MI_OK)
+                                Usart1Send("\nsaved ok!!!\n");
+                        }
                     }
                     else
                     {
-                        //write harcoded data
+                        //write harcoded data for the first time
                         status = Card_CreateDataString(readblock, &card_harcoded);
                         status = MFRC522_WriteBlock(BLOCK_TO_UNLOCK, readblock);
                         if (status == MI_OK)
                             Usart1Send("\nsaved ok!!!\n");
-                            
                     }
                 }
                 else
