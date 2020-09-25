@@ -38,6 +38,10 @@ unsigned char Card_CompareDataString (unsigned char *, card_data_t *);
 
 void Card_ShowCardIdent (card_data_t *);
 void Card_ShowCardData (card_data_t *);
+void Card_CopyCard (card_data_t *, card_data_t *);
+void Card_EmptyCard (card_data_t *);
+unsigned char Card_CompareCardIdent (card_data_t *, card_data_t *);
+unsigned char Card_CompareCardData (card_data_t *, card_data_t *);
 
 #endif    /* _CARD_UTILS_H_ */
 

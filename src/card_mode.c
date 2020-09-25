@@ -30,7 +30,6 @@ typedef enum {
     CARD_STANDBY,
     CARD_SHOW_SESSIONS,
     CARD_SHOW_SESSIONS_MOVE_AWAY,
-    CARD_SHOW_SESSIONS_MOVE_AWAY_1,
     CARD_SHOW_SESSIONS_MOVE_CLOSE,
     CARD_SHOW_SESSIONS_MOVE_CLOSE_1,
     CARD_DISCOUNT,
@@ -54,6 +53,7 @@ unsigned char card_internal = 0;
 unsigned char card_disc = 0;
 card_mode_t card_mode_state = CARD_INIT_MFRC522;
 volatile unsigned short tt_card_internal = 0;
+volatile unsigned short tt_card_internal2 = 0;
 
 // Module Private Functions ----------------------------------------------------
 uint8_t Card_Mode_Check_And_Select (card_data_t *);
@@ -72,14 +72,16 @@ void Card_Mode_Standby_Init (void)
 }
 
 
+unsigned char card_mode_internal_state = 0;
 uint8_t id [20] = { 0 };
 #define BLOCK_TO_UNLOCK    4    //sector 1 bloque 0
+unsigned char s_key [] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
 card_data_t card_data_last;
 card_data_t card_data_current;
 void Card_Mode_Standby (mem_bkp_t * configurations)
 {
     unsigned char status = 0;
-    unsigned char size = 0;
+    // unsigned char size = 0;
     char s_lcd [40] = { 0 };
     
     switch (card_mode_state)
@@ -155,53 +157,63 @@ void Card_Mode_Standby (mem_bkp_t * configurations)
         if (status == MI_OK)
         {
             Card_ShowCardIdent(&card_data_current);
-            Wait_ms(2000);
+            card_mode_state++;
         }
         break;
 
     case CARD_SHOW_SESSIONS:
-        size = MFRC522_SelectTag(id);
-        if (size)
+        *(id+0) = card_data_current.uid_bytes[0];
+        *(id+1) = card_data_current.uid_bytes[1];
+        *(id+2) = card_data_current.uid_bytes[2];
+        *(id+3) = card_data_current.uid_bytes[3];
+        *(id+4) = card_data_current.bcc;
+        status = MFRC522_Auth(PICC_AUTHENT1A, BLOCK_TO_UNLOCK, s_key, id);
+        
+        if (status == MI_OK)
         {
-            card_data_current.type = size;
-            Card_ShowCardIdent(&card_data_current);            
-            
-            unsigned char s_key [] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
-            status = MFRC522_Auth(PICC_AUTHENT1A, BLOCK_TO_UNLOCK, s_key, id);
+            unsigned char readblock[18] = { 0 };
+            status = MFRC522_ReadBlock(BLOCK_TO_UNLOCK, readblock);
             if (status == MI_OK)
             {
-                unsigned char readblock[18] = { 0 };
-                status = MFRC522_ReadBlock(BLOCK_TO_UNLOCK, readblock);
+                status = Card_ProcessDataString(readblock, &card_data_current);
                 if (status == MI_OK)
                 {
-                    status = Card_ProcessDataString(readblock, &card_data_current);
-                    if (status == MI_OK)
+                    Card_ShowCardData(&card_data_current);
+                    sprintf(s_lcd, "Sesiones %d/%d  ",
+                            card_data_current.sessions_left,
+                            card_data_current.sessions_orig);
+
+                    LCD_Writel1(s_lcd);
+
+                    // verifico credito
+                    if (card_data_current.sessions_left > 0)
                     {
-                        Card_ShowCardData(&card_data_current);
-                        sprintf(s_lcd, "Sesiones %d/%d  ",
-                                card_data_current.sessions_left,
-                                card_data_current.sessions_orig);
-                        
-                        LCD_Writel1(s_lcd);
+                        Card_CopyCard(&card_data_last, &card_data_current);
+                        Card_EmptyCard(&card_data_current);
+                        tt_card_internal = 3000;
                         card_mode_state++;
                     }
                     else
                     {
-                        sprintf(s_lcd, "invalid data %s\n", readblock);
-                        Usart1Send(s_lcd);
+                        Usart1Send("no credit in card\n");
+                        Wait_ms(1200);
+                        card_mode_state = CARD_ERROR_NO_CREDIT;
                     }
                 }
                 else
-                    Usart1Send("cant read card data!\n");
-
-                //desbloqueo rfid
-                MFRC522_StopCrypto1();
+                {
+                    sprintf(s_lcd, "invalid data %s\n", readblock);
+                    Usart1Send(s_lcd);
+                }
             }
             else
-                Usart1Send("cant authorize card!\n");
+                Usart1Send("cant read card data!\n");
+
+            //desbloqueo rfid
+            MFRC522_StopCrypto1();
         }
         else
-            Usart1Send("cant select card!\n");
+            Usart1Send("cant authorize card!\n");
         
         if (status != MI_OK)
             card_mode_state = CARD_ERROR_INVALID;
@@ -209,82 +221,139 @@ void Card_Mode_Standby (mem_bkp_t * configurations)
         break;
 
     case CARD_SHOW_SESSIONS_MOVE_AWAY:
-        size = MFRC522_SelectTag(id);
-        sprintf(s_lcd, "type: 0x%02x id: 0x%02x 0x%02x 0x%02x 0x%02x\n",
-                size,
-                *(id+0),
-                *(id+1),
-                *(id+2),
-                *(id+3));
-        Usart1Send(s_lcd);
-        Wait_ms(30);
-
-        if ((size) && (size == card_data_current.type))
+        // busco tener 3 segundos sin tarjeta
+        status = Card_Mode_Check_And_Select(&card_data_current);
+        if (status == MI_OK)
         {
-            if (!tt_card_internal)
+            Card_ShowCardIdent(&card_data_current);
+            if (Card_CompareCardIdent(&card_data_current, &card_data_last) == MI_OK)
+                Usart1Send("tarjetas iguales\n");
+            else
             {
-                if (card_data_current.sessions_left > 0)
-                {
-                    LCD_Writel2("Aleje y acerque*");                        
-                    tt_card_internal = 1500;
-                    card_mode_state++;
-                }
-                else
-                    card_mode_state = CARD_ERROR_NO_CREDIT;
+                Usart1Send("tarjetas distintas\n");
+                card_mode_state = CARD_ERROR_INVALID;
+            }
+            tt_card_internal = 3000;
+        }
+
+        if (!tt_card_internal2)
+        {
+            switch (card_mode_internal_state)
+            {
+            case 0:
+                LCD_Writel2("Aleje y acerque*");
+                tt_card_internal2 = 1200;
+                card_mode_internal_state++;
+                break;
+
+            case 1:
+                LCD_Writel2(s_blank);
+                tt_card_internal2 = 1200;
+                card_mode_internal_state--;
+                break;
+
+            default:
+                card_mode_internal_state = 0;
+                break;
             }
         }
-        else
-            card_mode_state = CARD_SHOW_SESSIONS_MOVE_CLOSE;
-        
-        break;
 
-    case CARD_SHOW_SESSIONS_MOVE_AWAY_1:
-        if (!tt_card_internal)
+        if (!tt_card_internal)    //pasaron 3 segundos sin tarjeta
         {
-            LCD_Writel2(s_blank);            
-            card_mode_state--;
+            card_mode_state = CARD_SHOW_SESSIONS_MOVE_CLOSE;
+            tt_card_internal = 8000;
         }
         break;
 
     case CARD_SHOW_SESSIONS_MOVE_CLOSE:
-        size = MFRC522_SelectTag(id);
-        sprintf(s_lcd, "type: 0x%02x id: 0x%02x 0x%02x 0x%02x 0x%02x\n",
-                size,
-                *(id+0),
-                *(id+1),
-                *(id+2),
-                *(id+3));
-        Usart1Send(s_lcd);
-        Wait_ms(30);
-
-        if ((size) && (size == card_data_current.type))
+        // busco que acerquen nuevamente y espero 8 segundos
+        status = Card_Mode_Check_And_Select(&card_data_current);
+        if (status == MI_OK)
         {
-            if (!tt_card_internal)
+            Card_ShowCardIdent(&card_data_current);
+            if (Card_CompareCardIdent(&card_data_current, &card_data_last) == MI_OK)
             {
-                if (card_data_current.sessions_left > 0)
+                Usart1Send("tarjetas iguales\n");
+
+                *(id+0) = card_data_current.uid_bytes[0];
+                *(id+1) = card_data_current.uid_bytes[1];
+                *(id+2) = card_data_current.uid_bytes[2];
+                *(id+3) = card_data_current.uid_bytes[3];
+                *(id+4) = card_data_current.bcc;
+                status = MFRC522_Auth(PICC_AUTHENT1A, BLOCK_TO_UNLOCK, s_key, id);
+                if (status == MI_OK)
                 {
-                    LCD_Writel2("Acerque tarjeta*");
-                    tt_card_internal = 1500;
-                    card_mode_state++;
+                    unsigned char readblock[18] = { 0 };
+                    status = MFRC522_ReadBlock(BLOCK_TO_UNLOCK, readblock);
+                    if (status == MI_OK)
+                    {
+                        status = Card_ProcessDataString(readblock, &card_data_current);
+                        if (status == MI_OK)
+                        {
+                            status = Card_CompareCardData(&card_data_current, &card_data_last);
+                            if (status == MI_OK)
+                            {
+                                Usart1Send("tarjetas con misma data\n");
+                                LCD_Writel1(" Mantenga cerca ");
+                                LCD_2DO_RENGLON;
+                                tt_card_internal = 0;
+                                card_mode_state = CARD_DISCOUNT;
+                            }
+                        }
+
+                        if (status != MI_OK)
+                        {
+                            sprintf(s_lcd, "invalid data %s\n", readblock);
+                            Usart1Send(s_lcd);
+                        }
+                    }
+                    else
+                        Usart1Send("cant read card data!\n");
                 }
-                else
-                    card_mode_state = CARD_ERROR_NO_CREDIT;
+
+                if (status != MI_OK)
+                {
+                    //desbloqueo rfid
+                    MFRC522_StopCrypto1();
+                    card_mode_state = CARD_ERROR_INVALID;
+                }
+            }
+            else
+            {
+                Usart1Send("tarjetas distintas\n");
+                card_mode_state = CARD_ERROR_INVALID;
             }
         }
-        else
-            card_mode_state = CARD_DISCOUNT;
-        
+
+        if (!tt_card_internal2)
+        {
+            switch (card_mode_internal_state)
+            {
+            case 0:
+                LCD_Writel2(" Mantenga cerca ");
+                tt_card_internal2 = 1200;
+                card_mode_internal_state++;
+                break;
+
+            case 1:
+                LCD_Writel2(s_blank);
+                tt_card_internal2 = 1200;
+                card_mode_internal_state--;
+                break;
+
+            default:
+                card_mode_internal_state = 0;
+                break;
+            }
+        }
+
+        //pasaron 8 segundos sin tarjeta
+        if ((card_mode_state == CARD_SHOW_SESSIONS_MOVE_CLOSE) &&
+            (!tt_card_internal))
+            card_mode_state = CARD_ERROR_INVALID;
+
         break;
 
-    case CARD_SHOW_SESSIONS_MOVE_CLOSE_1:
-        if (!tt_card_internal)
-        {
-            LCD_Writel2(s_blank);            
-            card_mode_state--;
-        }
-        break;
-        
-        
     case CARD_DISCOUNT:
         if (!tt_card_internal)
         {
@@ -338,7 +407,6 @@ void Card_Mode_Standby (mem_bkp_t * configurations)
         if (!tt_card_internal)
         {
             LCD_Writel1("Presione O3 para");
-            // LCD_Writel1(" iniciar sesion ");
             tt_card_internal = 1000;
             card_mode_state--;
         }
@@ -414,6 +482,9 @@ void Card_Mode_Timeouts (void)
 {
     if (tt_card_internal)
         tt_card_internal--;
+
+    if (tt_card_internal2)
+        tt_card_internal2--;
 }
 
 //--- end of file ---//

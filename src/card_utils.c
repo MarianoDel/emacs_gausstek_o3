@@ -36,6 +36,54 @@ void Card_SaveCardData (card_data_t * cd, uint8_t * id)
     
 }
 
+// compara la estructura de indentificacion de dos tarjetas
+unsigned char Card_CompareCardIdent (card_data_t * cd1, card_data_t * cd2)
+{
+    unsigned char status = MI_ERR;
+
+    if ((cd1->uid == cd2->uid) &&
+        (cd1->bcc == cd2->bcc) &&
+        (cd1->type == cd2->type))
+        status = MI_OK;
+
+    return status;
+}
+
+
+// compara la estructura de datos de dos tarjetas
+unsigned char Card_CompareCardData (card_data_t * cd1, card_data_t * cd2)
+{
+    unsigned char status = MI_ERR;
+
+    if ((cd1->sessions_left == cd2->sessions_left) &&
+        (cd1->sessions_orig == cd2->sessions_orig))
+        status = MI_OK;
+
+    return status;
+}
+
+
+// copia toda la info de una tarjeta a otra
+void Card_CopyCard (card_data_t * copy_cd, card_data_t * cd)
+{
+    copy_cd->uid = cd->uid;
+    copy_cd->bcc = cd->bcc;
+    copy_cd->type = cd->type;
+    copy_cd->sessions_left = cd->sessions_left;
+    copy_cd->sessions_orig = cd->sessions_orig;
+}
+
+
+// vacia la estructura de la tarjeta
+void Card_EmptyCard (card_data_t * cd)
+{
+    cd->uid = 0;
+    cd->bcc = 0;
+    cd->type = 0;
+    cd->sessions_left = 0;
+    cd->sessions_orig = 0;
+}
+
 
 // muestra informacion/data de una tarjeta
 void Card_ShowCardData (card_data_t * cd)

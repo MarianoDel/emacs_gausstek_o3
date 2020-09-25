@@ -182,7 +182,7 @@ uint8_t MFRC522_Compare(uint8_t * CardID, uint8_t * CompareID)
     return MI_OK;
 }
 
-//TODO: revisar esta completa para exportar
+
 void MFRC522_Write(uint8_t addr, uint8_t val)
 {
     // Address format：0XXXXXX0
