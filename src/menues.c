@@ -146,10 +146,10 @@ resp_t MENU_Main (mem_bkp_t * configurations)
                                 actions);
 
         if (resp == resp_change)
-            menu_state = MENU_SHOW_ALARM;
+            menu_state = MENU_SHOW_END_CONF;
 
         if (resp == resp_change_all_up)
-            menu_state = MENU_SHOW_END_CONF;
+            menu_state = MENU_SHOW_ALARM;
         
         if (resp == resp_selected)
         {
@@ -176,10 +176,10 @@ resp_t MENU_Main (mem_bkp_t * configurations)
                                 actions);
 
         if (resp == resp_change)
-            menu_state = MENU_SHOW_TICKER;
+            menu_state = MENU_SHOW_TREATMENT_TIME;
 
         if (resp == resp_change_all_up)
-            menu_state = MENU_SHOW_TREATMENT_TIME;
+            menu_state = MENU_SHOW_TICKER;
 
         if (resp == resp_selected)
         {
@@ -206,10 +206,10 @@ resp_t MENU_Main (mem_bkp_t * configurations)
                                 actions);
 
         if (resp == resp_change)
-            menu_state = MENU_SHOW_MODE;
+            menu_state = MENU_SHOW_ALARM;
 
         if (resp == resp_change_all_up)
-            menu_state = MENU_SHOW_ALARM;
+            menu_state = MENU_SHOW_MODE;
 
         if (resp == resp_selected)
         {
@@ -237,10 +237,10 @@ resp_t MENU_Main (mem_bkp_t * configurations)
                                 actions);
 
         if (resp == resp_change)
-            menu_state = MENU_SHOW_PASS;
+            menu_state = MENU_SHOW_TICKER;
 
         if (resp == resp_change_all_up)
-            menu_state = MENU_SHOW_TICKER;
+            menu_state = MENU_SHOW_PASS;
 
         if (resp == resp_selected)
         {
@@ -268,10 +268,10 @@ resp_t MENU_Main (mem_bkp_t * configurations)
                                 actions);
 
         if (resp == resp_change)
-            menu_state = MENU_SHOW_END_CONF;
+            menu_state = MENU_SHOW_MODE;
 
         if (resp == resp_change_all_up)
-            menu_state = MENU_SHOW_MODE;
+            menu_state = MENU_SHOW_END_CONF;
 
         if (resp == resp_selected)
         {
@@ -300,10 +300,10 @@ resp_t MENU_Main (mem_bkp_t * configurations)
                                 actions);
 
         if (resp == resp_change)
-            menu_state = MENU_SHOW_TREATMENT_TIME;
+            menu_state = MENU_SHOW_PASS;
 
         if (resp == resp_change_all_up)
-            menu_state = MENU_SHOW_PASS;
+            menu_state = MENU_SHOW_TREATMENT_TIME;
 
         if (resp == resp_selected)
         {
