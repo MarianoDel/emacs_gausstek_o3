@@ -12,11 +12,11 @@
 // Includes --------------------------------------------------------------------
 #include "normal_mode.h"
 #include "lcd_utils.h"
-// #include "lcd.h"
-// #include "flash_program.h"
-// #include "menues.h"
+#include "title_conf.h"
 
 #include <stdio.h>
+
+
 
 // Module Private Types & Macros -----------------------------------------------
 typedef enum {
@@ -51,7 +51,12 @@ void Normal_Mode_Standby (mem_bkp_t * configurations)
     switch (normal_mode_state)
     {
     case NORMAL_INIT:
+#ifdef INITIAL_MSG_WURTH
         LCD_Writel1("WURTH ARGENTINA ");
+#endif
+#ifdef INITIAL_MSG_GEN_O3
+        LCD_Writel1("GENERADOR OZONO ");        
+#endif
         normal_internal = 0;
         ChangeLed(LED_TREATMENT_STANDBY);
         normal_mode_state++;

@@ -17,9 +17,7 @@
 #include "mfrc522.h"
 #include "tim.h"
 #include "uart.h"
-
-// #include "flash_program.h"
-// #include "menues.h"
+#include "title_conf.h"
 
 #include <stdio.h>
 
@@ -106,7 +104,12 @@ void Card_Mode_Standby (mem_bkp_t * configurations)
         break;
 
     case CARD_INIT:
+#ifdef INITIAL_MSG_WURTH
         LCD_Writel1("WURTH ARGENTINA ");
+#endif
+#ifdef INITIAL_MSG_GEN_O3
+        LCD_Writel1("GENERADOR OZONO ");        
+#endif
         card_internal = 0;
         ChangeLed(LED_TREATMENT_STANDBY);
         card_mode_state++;

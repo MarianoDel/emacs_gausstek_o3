@@ -11,7 +11,7 @@
 #define _HARD_H_
 
 #include "stm32f0xx.h"
-
+#include "title_conf.h"
 
 //-- Defines For Configuration -------------------
 //---- Configuration for Hardware Versions -------
@@ -24,6 +24,18 @@
 
 
 //---- Features Configuration -----------------
+#ifdef INITIAL_MSG_GEN_O3    
+#define ON_EMPTY_MEM_INIT_NORMAL_MODE
+// #define ON_EMPTY_MEM_INIT_CARD_MODE
+#endif
+
+#ifdef INITIAL_MSG_WURTH
+// #define ON_EMPTY_MEM_INIT_NORMAL_MODE
+#define ON_EMPTY_MEM_INIT_CARD_MODE
+#endif
+
+
+
 //---- End of Features Configuration ----------
 
 // Exported Pinout Names -------------------------------------------------------
@@ -286,6 +298,7 @@ typedef enum
 #define LED_TREATMENT_PAUSED    3
 #define LED_NO_RFID    4
 
+// Answers expected
 typedef enum {
     resp_ok = 0,
     resp_continue,

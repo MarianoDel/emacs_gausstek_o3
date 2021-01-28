@@ -75,6 +75,9 @@
   - esta info la busque en este link
     https://www.8051projects.net/lcd-interfacing/initialization.php
 
+  - como generar caracteres propios en GCRAM
+    https://www.handsonembedded.com/lcd16x2-hd44780-tutorial-5/
+
 * Info sobre el funcionamiento del encoder
   - todavia no puse las rutinas, pero fui con este link
     https://dronebotworkshop.com/rotary-encoders-arduino/

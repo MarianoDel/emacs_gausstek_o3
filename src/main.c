@@ -169,8 +169,14 @@ int main(void)
                 configurations_in_mem.ticker_onoff = 1;        
                 // configurations_in_mem.ticker_time = 60000;
                 configurations_in_mem.ticker_time = 2000;
+#ifdef ON_EMPTY_MEM_INIT_CARD_MODE
                 // configurations_in_mem.operation_mode = NORMAL_MODE;
                 configurations_in_mem.operation_mode = CARD_MODE;
+#endif
+#ifdef ON_EMPTY_MEM_INIT_NORMAL_MODE
+                configurations_in_mem.operation_mode = NORMAL_MODE;
+                // configurations_in_mem.operation_mode = CARD_MODE;
+#endif
                 //el dummy1 lo uso como habilitacion de O3 en tarjeta
                 configurations_in_mem.dummy1 = 0;
             }
