@@ -9,9 +9,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "lcd_utils.h"
-#include "hard.h"
-#include "stm32f0xx.h"
-#include "tim.h"
 #include "lcd.h"
 
 #include <string.h>
@@ -83,15 +80,7 @@ volatile unsigned short show_select_timer = 0;
 ///////////////////////////////////////////////////////
 void LCD_UtilsInit (void)
 {
-    LCDInit();
-
-    Lcd_Command(CLEAR);
-    Wait_ms(100);
-    Lcd_Command(CURSOR_OFF);
-    Wait_ms(100);
-    Lcd_Command(BLINK_OFF);
-    Wait_ms(100);    
-    CTRL_BKL_ON;
+    LCD_Init_Setup ();
 }
 
 

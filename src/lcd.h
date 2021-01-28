@@ -67,7 +67,7 @@ void LcdSetDDRAMSM (unsigned char addr);
 #endif
 
 unsigned char SwapNibble (unsigned char);
-
+void LCD_Init_Setup (void);
 
 /*++++++++++++++++++++++++++++++ DON´T MODIFY +++++++++++++++++++++++++++++++*/
 

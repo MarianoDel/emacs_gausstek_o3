@@ -209,6 +209,19 @@ void LCDInit(void)
 }
 */
 
+void LCD_Init_Setup (void)
+{
+    LCDInit();
+
+    Lcd_Command(CLEAR);
+    Wait_ms(100);
+    Lcd_Command(CURSOR_OFF);
+    Wait_ms(100);
+    Lcd_Command(BLINK_OFF);
+    Wait_ms(100);    
+    CTRL_BKL_ON;
+}
+
 //Comandos LCD 4 bits
 void Lcd_Command (unsigned char cmd)
 {
