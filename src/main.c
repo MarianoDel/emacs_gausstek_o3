@@ -17,6 +17,7 @@
 #include "tim.h"
 #include "flash_program.h"
 
+#include "switches_answers.h"
 #include "lcd.h"
 #include "lcd_utils.h"
 #include "test_functions.h"
@@ -476,7 +477,13 @@ int main(void)
             if (resp == resp_change)
                 timer_standby = 20000;
             
-            if ((resp == resp_finish) || (!timer_standby))
+            if (resp == resp_finish)
+            {
+                timer_standby = 0;
+                main_state = MAIN_INIT_FROM_TREATMENT;
+            }
+
+            if (!timer_standby)    //time for conf ended
                 main_state = MAIN_INIT_FROM_TREATMENT;
             
             break;
@@ -491,7 +498,10 @@ int main(void)
                 main_state = MAIN_INIT;
 
             if (resp == resp_finish)
+            {
+                timer_standby = 0;
                 main_state = MAIN_INIT;
+            }
             
             if (resp == resp_need_to_save)
             {
@@ -511,6 +521,7 @@ int main(void)
                 }
                 Wait_ms(1000);                    
 
+                timer_standby = 0;
                 main_state = MAIN_INIT;
             }
             break;

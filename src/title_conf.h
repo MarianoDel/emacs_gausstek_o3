@@ -15,8 +15,8 @@
 
 // Exported Constants or Macros ------------------------------------------------
 // pick a title
-#define INITIAL_MSG_WURTH
-// #define INITIAL_MSG_GEN_O3
+// #define INITIAL_MSG_WURTH
+#define INITIAL_MSG_GEN_O3
 
 
     

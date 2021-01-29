@@ -53,16 +53,6 @@
 #define LCD_3ER_RENGLON Lcd_SetDDRAM(0x14)
 #define LCD_4TO_RENGLON Lcd_SetDDRAM(0x54)
 
-// Switches actions
-typedef enum {
-    selection_none = 0,
-    selection_up,
-    selection_dwn,
-    selection_enter,
-    selection_back
-
-} sw_actions_t;
-
 //estados de la funcion BLINKING
 #define BLINKING_INIT       0
 #define BLINKING_MARK_D     1

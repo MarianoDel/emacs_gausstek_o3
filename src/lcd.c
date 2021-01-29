@@ -8,6 +8,7 @@
 //---------------------------------------------
 
 #include "lcd.h"
+#include "lcd_hard_defs.h"
 #include "stm32f0xx.h"
 #include "tim.h"
 

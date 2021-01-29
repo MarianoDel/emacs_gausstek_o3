@@ -12,8 +12,8 @@
 #ifndef _MENUES_H_
 #define _MENUES_H_
 
-#include "hard.h"
-#include "flash_program.h"
+#include "switches_answers.h"
+#include "parameters.h"
 
 // Exported Types --------------------------------------------------------------
 #define mem_bkp_t parameters_typedef

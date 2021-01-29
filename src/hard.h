@@ -12,6 +12,7 @@
 
 #include "stm32f0xx.h"
 #include "title_conf.h"
+#include "switches_answers.h"
 
 //-- Defines For Configuration -------------------
 //---- Configuration for Hardware Versions -------
@@ -299,31 +300,7 @@ typedef enum
 #define LED_NO_RFID    4
 
 // Answers expected
-typedef enum {
-    resp_ok = 0,
-    resp_continue,
-    resp_selected,
-    resp_change,
-    resp_change_all_up,
-    resp_working,
-    resp_error,
-    resp_need_to_save,
-    resp_finish,
-    resp_nok,
-    resp_timeout,
-    resp_ready,
-    resp_no_answer,
-    resp_save
 
-} resp_t;
-
-typedef enum {
-    SW_NO = 0,
-    SW_MIN,
-    SW_HALF,
-    SW_FULL
-    
-} resp_sw_t;
 
 #define SWITCHES_TIMER_RELOAD    5
 #define SWITCHES_THRESHOLD_FULL	1000    //5 segundos
