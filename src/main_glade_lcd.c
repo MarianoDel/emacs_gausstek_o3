@@ -10,8 +10,8 @@
 #include "menues.h"
 
 // The LCD used 2x16 or 4x20
-#define LCD_CONF_2_16
-// #define LCD_CONF_4_20
+// #define LCD_CONF_2_16
+#define LCD_CONF_4_20
 
 #ifdef LCD_CONF_4_20
 #define LCD_ROWS    4
@@ -128,7 +128,7 @@ int main(int argc, char *argv[])
     // gint mydata = 5;
     // gpointer data = (gpointer *) &mydata;
     // gdk_threads_add_timeout (1000, Print_Callback, data);
-    
+
     gdk_threads_add_timeout (1000, Lcd_Timeout_Callback, NULL);    
     gdk_threads_add_timeout (1, Test_Timeouts, NULL);
     gdk_threads_add_idle (Test_Main_Loop, NULL);    
@@ -597,6 +597,20 @@ void Lcd_SetDDRAM (uint8_t ddram)
         lcd_line = 1;
         lcd_cursor = ddram - 0x40;
     }
+
+#ifdef LCD_CONF_4_20
+    if ((ddram < (0x14 + LCD_COLUMNS)) && (ddram >= 0x14))
+    {
+        lcd_line = 2;
+        lcd_cursor = ddram - 0x14;
+    }
+
+    if ((ddram < (0x54 + LCD_COLUMNS)) && (ddram >= 0x54))
+    {
+        lcd_line = 3;
+        lcd_cursor = ddram - 0x54;
+    }    
+#endif
 }
 
 
