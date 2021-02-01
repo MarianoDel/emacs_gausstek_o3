@@ -7,8 +7,6 @@
 // #### LCD.H ################################
 //---------------------------------------------
 
-#include "hard.h"
-
 //--- LCD Configurations ---//
 // Hardware configurations in lcd_hard_defs.h
 //--- End of LCD Configurations ---//

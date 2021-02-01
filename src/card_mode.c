@@ -18,6 +18,7 @@
 #include "tim.h"
 #include "uart.h"
 #include "title_conf.h"
+#include "hard.h"
 
 #include <stdio.h>
 

@@ -224,6 +224,19 @@ tests_card:
 	gcc src/tests_card.c card_utils.o
 	./a.out
 
+tests_lcd_simul:
+	# first compile common modules (modules to test and dependencies)
+	gcc -c src/lcd_utils.c -I. $(INCDIR)
+	gcc -c src/menues.c -I. $(INCDIR)
+	# then the gtk lib modules
+	# gcc -c `pkg-config --cflags gtk+-3.0` src/fake_lcd_hard.c -o fake_lcd_hard.o
+	gcc -c `pkg-config --cflags gtk+-3.0` src/main_glade_lcd.c -o main_glade_lcd.o
+	# link everithing
+	# gcc main_glade_lcd3.o fake_lcd_hard.o lcd_utils.o menues.o `pkg-config --libs gtk+-3.0` -o tests_gtk
+	gcc main_glade_lcd.o lcd_utils.o menues.o `pkg-config --libs gtk+-3.0` -o tests_gtk
+	# run the simulation
+	# ./tests_gtk
+
 
 
 # *** EOF ***

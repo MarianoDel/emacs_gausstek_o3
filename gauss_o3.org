@@ -258,3 +258,15 @@ i: 8 id: 0x49
 i: 9 id: 0xad  
 i: 10 id: 0x92 
 i: 11 id: 0x99 
+
+* Modificacion Firmware 20-01-2021
+** Luego de setear tiempo en el Menu o otros seteos en el MainMenu
+*** Problema
+   - no aparecen las barritas en el tratamiento
+   - si se pausa no titila el primer renglon
+
+*** Solucion
+    - El timer de timeout de 20 segundos dentro de los menues se utiliza para
+      la barrita en el tratamiento y el blinking de linea uno en la pausa.
+    - Cuando estos 20segundos pasan todo se corrije
+    - Igual modifique a la salida de ambos menues pongo el timer_standby = 0

@@ -14,6 +14,8 @@
 #include "lcd_utils.h"
 #include "title_conf.h"
 
+#include "hard.h"
+
 #include <stdio.h>
 
 

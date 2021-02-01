@@ -11,7 +11,7 @@
 #define _LCD_UTILS_H_
 
 // Included for the Types ------------------------------------------------------
-#include "hard.h"
+#include "switches_answers.h"
 
 // Modules needs Switches Functions for menus interaction ----------------------
 // #define LCD_USE_SWITCHES_FOR_MENUES_FUNCTIONS
