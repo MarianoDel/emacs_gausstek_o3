@@ -238,5 +238,19 @@ tests_lcd_simul:
 	# ./tests_gtk
 
 
+tests_lcd_menues:
+	# first compile common modules (modules to test and dependencies)
+	gcc -c src/lcd_utils.c -I. $(INCDIR)
+	gcc -c src/menues.c -I. $(INCDIR)
+	# the module that implements tests_lcd_application.h functions
+	gcc -c `pkg-config --cflags gtk+-3.0` src/tests_lcd_menues.c -o tests_lcd_menues.o
+	# then the gtk lib modules
+	gcc -c `pkg-config --cflags gtk+-3.0` src/tests_glade_lcd.c -o tests_glade_lcd.o
+	# link everithing
+	gcc tests_glade_lcd.o tests_lcd_menues.o lcd_utils.o menues.o `pkg-config --libs gtk+-3.0` -o tests_gtk
+	# run the simulation
+	./tests_gtk
+
+
 
 # *** EOF ***

@@ -46,7 +46,7 @@ volatile unsigned short timer_barrita = 0;
 volatile unsigned short wait_ms_var = 0;
 
 volatile unsigned char treatment_running = 0;
-volatile unsigned char treatment_running_mins = 0;
+volatile unsigned short treatment_running_mins = 0;
 volatile unsigned char treatment_running_secs = 0;
 volatile unsigned short millis = 0;
 volatile unsigned short timer_ticker = 0;
@@ -84,50 +84,7 @@ int main(void)
     }
 
     // Begin Hard Tests - check test_functions module
-    // TF_Led();    //simple led functionality
-
-    // TF_Buzzer();    //simple buzzer functionality
-    
-    // TF_Buzzer_Functions ();    //buzzer and their functions
-
-    // TF_switchO3();
-
-    // TF_switchSET();
-
-    // TF_Relay();    
-    
-    // TF_lcdE();
-
-    // TF_lcdRS();
-
-    // TF_lcdData();
-
-    // TF_RelayBoardOutputs ();
-
-    // TF_lcdBklight();
-
-    // TF_lcdBlink();
-    
-    // TF_lcdScroll();
-    
-    // TF_lcdBigNumbers();
-    
-    // TF_zcd();
-
-    // TF_Usart1_RxTx ();
-    
-    // TF_MenuFunction();
-
-// #ifdef WITH_EXTI    
-//     TF_zcd_by_int();
-// #endif
-
-    // TF_SPI();
-
-    // TF_SPI_MFRC();
-    
-
-
+    // TF_Hardware_Tests ();
     // End Hard Tests -------------------------------
 
     
@@ -160,12 +117,12 @@ int main(void)
 
             // configuracion desde la memoria
             memcpy(&configurations_in_mem, pmem, sizeof(mem_bkp_t));
-
+            
             // check empty mem
-            if (configurations_in_mem.treatment_time_min == 0xff)
+            if (configurations_in_mem.treatment_time_min == 0xffff)
             {
                 //mem empty go for defaults
-                configurations_in_mem.treatment_time_min = 10;
+                configurations_in_mem.treatment_time_min = 101;
                 configurations_in_mem.alarms_onoff = 1;
                 configurations_in_mem.ticker_onoff = 1;        
                 // configurations_in_mem.ticker_time = 60000;
@@ -285,29 +242,59 @@ int main(void)
             //Update del Display timer
             if (last_secs != treatment_running_secs)
             {
-                last_secs = treatment_running_secs;                
-                sprintf(s_lcd, "%02d", treatment_running_mins);
-                LCD_BigNumbers(0, s_lcd[0] - '0');
-                LCD_BigNumbers(3, s_lcd[1] - '0');
-
-                sprintf(s_lcd, "%02d", treatment_running_secs);
-                LCD_BigNumbers(7, s_lcd[0] - '0');
-                LCD_BigNumbers(10, s_lcd[1] - '0');
-
-                // y los dos puntos en los impares
-                if (last_secs & 0x01)
+                last_secs = treatment_running_secs;
+                if (treatment_running_mins < 100)
                 {
-                    Lcd_SetDDRAM(0x06);
-                    Lcd_senddata(0xa5);
-                    Lcd_SetDDRAM(0x46);
-                    Lcd_senddata(0xa5);
+                    sprintf(s_lcd, "%02d", treatment_running_mins);
+                    LCD_BigNumbers(0, s_lcd[0] - '0');
+                    LCD_BigNumbers(3, s_lcd[1] - '0');
+
+                    sprintf(s_lcd, "%02d", treatment_running_secs);
+                    LCD_BigNumbers(7, s_lcd[0] - '0');
+                    LCD_BigNumbers(10, s_lcd[1] - '0');
+
+                    // y los dos puntos en los impares
+                    if (last_secs & 0x01)
+                    {
+                        Lcd_SetDDRAM(0x06);
+                        Lcd_senddata(0xa5);
+                        Lcd_SetDDRAM(0x46);
+                        Lcd_senddata(0xa5);
+                    }
+                    else
+                    {
+                        Lcd_SetDDRAM(0x06);
+                        Lcd_senddata(' ');
+                        Lcd_SetDDRAM(0x46);
+                        Lcd_senddata(' ');
+                    }
                 }
                 else
                 {
-                    Lcd_SetDDRAM(0x06);
-                    Lcd_senddata(' ');
-                    Lcd_SetDDRAM(0x46);
-                    Lcd_senddata(' ');
+                    // tiempo mayor a 100 minutos
+                    sprintf(s_lcd, "%3d", treatment_running_mins);
+                    LCD_BigNumbers(0, s_lcd[0] - '0');
+                    LCD_BigNumbers(3, s_lcd[1] - '0');
+                    LCD_BigNumbers(6, s_lcd[2] - '0');
+                    
+                    sprintf(s_lcd, "%02d", treatment_running_secs);
+                    LCD_BigNumbers(10, s_lcd[0] - '0');
+
+                    // y los dos puntos en los impares
+                    if (last_secs & 0x01)
+                    {
+                        Lcd_SetDDRAM(0x09);
+                        Lcd_senddata(0xa5);
+                        Lcd_SetDDRAM(0x49);
+                        Lcd_senddata(0xa5);
+                    }
+                    else
+                    {
+                        Lcd_SetDDRAM(0x09);
+                        Lcd_senddata(' ');
+                        Lcd_SetDDRAM(0x49);
+                        Lcd_senddata(' ');
+                    }                    
                 }
             }
 

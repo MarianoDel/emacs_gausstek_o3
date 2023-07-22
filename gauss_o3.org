@@ -270,3 +270,15 @@ i: 11 id: 0x99
       la barrita en el tratamiento y el blinking de linea uno en la pausa.
     - Cuando estos 20segundos pasan todo se corrije
     - Igual modifique a la salida de ambos menues pongo el timer_standby = 0
+
+
+* Modificacion Hardware por display LCD
+** El Contraste esta para el LCD azul de una marca y se compro otra
+*** Contraste Verde? original
+   - R12 8k2; R14 470
+
+*** Contraste Azul original
+   - R12 8k2; R14 1k5
+
+*** Modificacion al Contraste Azul nuevo
+    - R12 8k2 // 4k7

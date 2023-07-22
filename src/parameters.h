@@ -13,17 +13,20 @@
 //-- Configuration for Struct --------------------
 typedef struct {
 
-    unsigned char treatment_time_min;    //1
-    unsigned char alarms_onoff;    //2
-    unsigned char ticker_onoff;    //3
-    unsigned short ticker_time;    //5
+    unsigned short treatment_time_min;    //2
+    unsigned short ticker_time;    //4
+    unsigned char alarms_onoff;    //5
+    unsigned char ticker_onoff;    //6
 
-    unsigned int saved_psw;    //9
-    unsigned int new_psw;    //13    
-    unsigned char operation_mode;    //14
+    unsigned char operation_mode;    //7
+    unsigned char dummy1;    //8
     
-    unsigned char dummy1;    //15
-    unsigned char dummy2;    //16
+    unsigned int saved_psw;    //12 align 8
+    unsigned int new_psw;    //16
+
+    
+    // unsigned char dummy1;    //16
+    // unsigned char dummy2;    //16
     // unsigned char dummy3;    //17
 
 

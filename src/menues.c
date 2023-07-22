@@ -10,7 +10,7 @@
 
 // Includes --------------------------------------------------------------------
 #include "menues.h"
-// #include "hard.h"
+#include "hard.h"
 // #include "tim.h"
 #include "lcd_utils.h"
 // #include "gpio.h"
@@ -102,7 +102,7 @@ resp_t MENU_Main (mem_bkp_t * configurations)
         if (CheckCW())
             actions = selection_up;
 
-        resp = LCD_Password ("Ingrese Password", actions, &new_psw);        
+        resp = LCD_Password ("Ingrese Password", actions, &new_psw);
 
         if (resp == resp_selected)
         {

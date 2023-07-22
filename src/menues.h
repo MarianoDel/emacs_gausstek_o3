@@ -20,7 +20,7 @@
 
 // Exported Constants or Macros ------------------------------------------------
 #define MINIMUN_TIME_ALLOWED    1
-#define MAXIMUN_TIME_ALLOWED    100
+#define MAXIMUN_TIME_ALLOWED    999
 
 
 // Exported Functions ----------------------------------------------------------

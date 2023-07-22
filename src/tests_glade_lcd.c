@@ -4,31 +4,15 @@
 
 #include <gtk/gtk.h>
 #include <stdint.h>
-#include "cgrom.h"
+#include "tests_lcd_cgrom.h"
+#include "tests_lcd_configuration.h"
+#include "tests_lcd_application.h"
 
-#include "lcd_utils.h"
-#include "menues.h"
+// #include "lcd_utils.h"
+// #include "manual_mode.h"
+// #include "parameters.h"
 
-// The LCD used 2x16 or 4x20
-// #define LCD_CONF_2_16
-#define LCD_CONF_4_20
-
-#ifdef LCD_CONF_4_20
-#define LCD_ROWS    4
-#define LCD_COLUMNS    20
-// Start rows and columns from these pixels on the image
-#define PATCH_COLUMN_START    54
-#define PATCH_ROW_START    72
-#endif
-
-#ifdef LCD_CONF_2_16
-#define LCD_ROWS    2
-#define LCD_COLUMNS    16
-// Start rows and columns from these pixels on the image
-#define PATCH_COLUMN_START    70
-#define PATCH_ROW_START    74
-#endif
-
+// Module Types Constants and Macros -------------------------------------------
 #define LCD_LAST_ROW    (LCD_ROWS - 1)
 #define LCD_LAST_COLUMN    (LCD_COLUMNS - 1)
 
@@ -80,8 +64,6 @@ void Lcd_Command (unsigned char);
 void Lcd_sendcommand (uint8_t cmd);
 
 gboolean Lcd_Timeout_Callback (gpointer user_data);
-gboolean Test_Main_Loop (gpointer user_data);
-gboolean Test_Timeouts (gpointer user_data);
 
 void dwn_button_function (void);
 void up_button_function (void);
@@ -452,106 +434,80 @@ void get_lcd_patch_position (int row, int column, int * x, int * y)
 
 
 // Testing Function loop -------------------------------------------------------
-static GMutex mutex;
+// static GMutex mutex;
 
 
-extern volatile unsigned short show_select_timer;
-sw_actions_t switch_actions = selection_none;
+// extern volatile unsigned short show_select_timer;
+// volatile unsigned short mode_effect_timer = 0;
+// unsigned char mode_state;
 
-parameters_typedef configurations;
+// volatile unsigned char dmx_buff_data[3] = { 0 };
+// volatile unsigned char Packet_Detected_Flag = 0;
+// volatile unsigned short DMX_channel_selected = 1;
+// parameters_typedef mem_conf;
+// unsigned char pwm_channels [2] = { 0 };
 
-gboolean Test_Main_Loop (gpointer user_data)
-{
-    resp_t resp = resp_continue;
-    sw_actions_t actions = selection_none;
+// sw_actions_t switch_actions = selection_none;
+// int setup_done = 0;
+// gboolean Test_Main_Loop (gpointer user_data)
+// {
+//     resp_t resp = resp_continue;
 
-    // g_mutex_lock (&mutex);
-    // if (switch_actions != selection_none)
-    // {
-    //     actions = switch_actions;
-    //     switch_actions = selection_none;
-    //     g_print("new action: %d\n", actions);
-    // }
-    // g_mutex_unlock (&mutex);
+//     // mem_conf.channels_operation_mode = 1;
+//     resp = ManualMode (pwm_channels, switch_actions);
+
+//     if (resp == resp_need_to_save)
+//     {
+//         printf("memory needs a save!\n");
+//     }
+
+//     //wraper to clean sw
+//     g_mutex_lock (&mutex);
+
+//     if (switch_actions != selection_none)
+//         switch_actions = selection_none;
     
-    // resp = LCD_ShowSelectv2 ("Prueba display LCD", actions);
+//     g_mutex_unlock (&mutex);
+//     // usleep(500);
+        
+//     return TRUE;
+// }
 
-    // if (resp == resp_selected)
-    //     g_print ("This item was selected\n");
 
-    // if (resp == resp_change)
-    //     g_print ("Change to new menu DWN\n");
+// gboolean Test_Timeouts (gpointer user_data)
+// {
+//     //timeout lcd_utils internal
+//     if (show_select_timer)
+//         show_select_timer--;
 
-    // if (resp == resp_change_all_up)
-    //     g_print ("Change to new menu UP\n");
+//     //timeout for dmx_mode or manual_mode
+//     if (mode_effect_timer)
+//         mode_effect_timer--;
     
-    // if (resp == resp_finish)
-    //     return FALSE;
-    
-    // return TRUE;
+//     return TRUE;
+// }
 
-    // resp = LCD_ShowBlink ("  Entrando en   ",
-    //                       "Config Predeterm",
-    //                       3,
-    //                       BLINK_DIRECT);
+// //buttons functions
+// void dwn_button_function (void)
+// {
+//     g_mutex_lock (&mutex);
+//     switch_actions = selection_dwn;
+//     g_mutex_unlock (&mutex);
+// }
 
-    // if (resp == resp_finish)
-    //     return FALSE;
+// void up_button_function (void)
+// {
+//     g_mutex_lock (&mutex);
+//     switch_actions = selection_up;
+//     g_mutex_unlock (&mutex);
+// }
 
-    // return TRUE;
-    
-    resp = MENU_Main (&configurations);
-
-    //wraper to clean sw
-    g_mutex_lock (&mutex);
-
-    if (switch_actions != selection_none)
-        switch_actions = selection_none;
-    
-    g_mutex_unlock (&mutex);
-
-    
-    return TRUE;
-
-    // Lcd_TransmitStr("Hola!!!");
-    // Lcd_Command(4);
-    // Lcd_Command(6);
-    // Lcd_SetDDRAM(0x01);
-
-    // return FALSE;
-    
-}
-
-
-gboolean Test_Timeouts (gpointer user_data)
-{
-    if (show_select_timer)
-        show_select_timer--;
-    
-    return TRUE;
-}
-
-//buttons functions
-void dwn_button_function (void)
-{
-    g_mutex_lock (&mutex);
-    switch_actions = selection_dwn;
-    g_mutex_unlock (&mutex);
-}
-
-void up_button_function (void)
-{
-    g_mutex_lock (&mutex);
-    switch_actions = selection_up;
-    g_mutex_unlock (&mutex);
-}
-
-void set_button_function (void)
-{
-    g_mutex_lock (&mutex);
-    switch_actions = selection_enter;
-    g_mutex_unlock (&mutex);
-}
+// void set_button_function (void)
+// {
+//     g_mutex_lock (&mutex);
+//     switch_actions = selection_enter;
+//     g_mutex_unlock (&mutex);
+// }
 
 
 
@@ -776,53 +732,6 @@ void Lcd_Command (unsigned char data)
 
 
 
-// Nedded by menues module provided by hard module
-void UpdateEncoder (void)
-{
-}
-
-resp_sw_t CheckSET (void)
-{
-    resp_sw_t sw = SW_NO;
-    
-    g_mutex_lock (&mutex);
-
-    if (switch_actions == selection_enter)
-        sw = SW_MIN;
-    
-    g_mutex_unlock (&mutex);
-    
-    return sw;    
-}
-
-unsigned char CheckCCW (void)
-{
-    unsigned char a = 0;
-    
-    g_mutex_lock (&mutex);
-
-    if (switch_actions == selection_dwn)
-        a = 1;
-    
-    g_mutex_unlock (&mutex);
-    
-    return a;
-}
-
-
-unsigned char CheckCW (void)
-{
-    unsigned char a = 0;
-    
-    g_mutex_lock (&mutex);
-
-    if (switch_actions == selection_up)
-        a = 1;
-    
-    g_mutex_unlock (&mutex);
-    
-    return a;
-}
 
 
 //--- end of file ---//

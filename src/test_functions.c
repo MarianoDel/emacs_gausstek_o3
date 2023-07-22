@@ -34,9 +34,63 @@ extern volatile unsigned char usart1_have_data;
 
 
 // Module Private Functions ----------------------------------------------------
+void TF_Led(void);    //simple led functionality
+void TF_Buzzer(void);    //simple buzzer functionality
+void TF_Buzzer_Functions (void);    //buzzer and their functions
+void TF_switchO3(void);
+void TF_switchSET(void);
+void TF_Relay(void);    
+void TF_lcdE(void);
+void TF_lcdRS(void);
+void TF_lcdData(void);
+void TF_RelayBoardOutputs (void);
+void TF_lcdBklight(void);
+void TF_lcdBlink(void);
+void TF_lcdScroll(void);
+void TF_lcdBigNumbers(void);
+void TF_zcd(void);
+void TF_Usart1_RxTx (void);
+void TF_MenuFunction(void);
+void TF_zcd_by_int(void);
+void TF_SPI(void);
+void TF_SPI_MFRC(void);
 
 
 // Module Functions ------------------------------------------------------------
+void TF_Hardware_Tests (void)
+{
+    // TF_Led();    //simple led functionality
+    // TF_Buzzer();    //simple buzzer functionality
+    // TF_Buzzer_Functions ();    //buzzer and their functions
+    // TF_switchO3();
+    // TF_switchSET();
+    // TF_Relay();    
+
+    // TF_lcdE();
+    // TF_lcdRS();
+    // TF_lcdData();
+
+    // TF_RelayBoardOutputs ();
+
+    // TF_lcdBklight();
+    // TF_lcdBlink();
+    // TF_lcdScroll();
+    
+    // TF_lcdBigNumbers();
+    // TF_zcd();
+    // TF_Usart1_RxTx ();
+    // TF_MenuFunction();
+
+// #ifdef WITH_EXTI    
+//     TF_zcd_by_int();
+// #endif
+
+    // TF_SPI();
+    // TF_SPI_MFRC();
+    
+}
+
+
 void TF_Led (void)
 {
     while (1)
